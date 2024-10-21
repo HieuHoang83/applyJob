@@ -14,16 +14,18 @@ export class RecruitmentPostController {
     return this.recruitmentPostService.create(createRecruitmentPostDto);
   }
 
-  @Get()
-  findAll() {
-    return this.recruitmentPostService.findAll();
-  }
-
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.recruitmentPostService.findOne(+id);
   }
 
+  @Get()
+  @Public()
+  findAll() {
+    return this.recruitmentPostService.findAll();
+  }
+  
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateRecruitmentPostDto: UpdateRecruitmentPostDto) {
     return this.recruitmentPostService.update(+id, updateRecruitmentPostDto);
