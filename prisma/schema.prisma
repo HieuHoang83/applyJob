@@ -76,7 +76,7 @@ model Company {
 
 model Evaluation {
   id         Int      @id @default(autoincrement())
-  comments   String?
+  comment    String?
   rating     Float
   emotion    String?
   employee   Employee @relation(fields: [employeeId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
@@ -99,16 +99,19 @@ model Record {
 }
 
 model File {
-  id         Int      @id @default(autoincrement())
-  name       String
+  id         Int       @id @default(autoincrement())
   folderType String
   mimeType   String?
+  size       Int?
+  url        String
   record     Record[]
   company    Company?
-  userId     Int?     @unique
-  user       User?    @relation(fields: [userId], references: [id])
+  userId     Int?      @unique
+  user       User?     @relation(fields: [userId], references: [id])
   jobPostId  Int?
-  jobPost    JobPost? @relation(fields: [jobPostId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  jobPost    JobPost?  @relation(fields: [jobPostId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @default(now()) @updatedAt
 }
 
 model HistoryStatus {

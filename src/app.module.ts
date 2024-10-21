@@ -10,6 +10,9 @@ import { AuthModule } from './auth/auth.module';
 import { RecruitmentPostModule } from './recruitment-post/recruitment-post.module';
 import { CompanyModule } from './company/company.module';
 import { RecordsModule } from './records/records.module';
+import { FilesModule } from './files/files.module';
+import { TagsModule } from './tags/tags.module';
+import { EvaluationsModule } from './evaluations/evaluations.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -27,6 +30,9 @@ import { RecordsModule } from './records/records.module';
     RecruitmentPostModule,
     CompanyModule,
     RecordsModule,
+    FilesModule,
+    TagsModule,
+    EvaluationsModule,
   
   ],
   controllers: [AppController],
