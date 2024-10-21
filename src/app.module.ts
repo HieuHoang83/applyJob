@@ -9,6 +9,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './auth/auth.module';
 import { RecruitmentPostModule } from './recruitment-post/recruitment-post.module';
 import { CompanyModule } from './company/company.module';
+import { RecordsModule } from './records/records.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -25,6 +26,7 @@ import { CompanyModule } from './company/company.module';
     AuthModule,
     RecruitmentPostModule,
     CompanyModule,
+    RecordsModule,
   
   ],
   controllers: [AppController],

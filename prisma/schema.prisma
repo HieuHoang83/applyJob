@@ -49,13 +49,15 @@ model Employee {
 }
 
 model Employer {
-  specialization String?
+  userId         Int       @unique
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  hiringDate     DateTime?
+  department     String 
+  position       String
   company        Company   @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   companyId      Int
   jobPosts       JobPost[]
-  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId         Int       @unique
-
+  
   @@id([companyId, userId]) // Composite primary key
 }
 
