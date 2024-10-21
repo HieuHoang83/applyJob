@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Version, VERSION_NEUTRAL } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateEmployerDto, CreateUserDto } from './dto/create-user.dto';
+import { CreateEmployee, CreateEmployerDto, CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UseGuards } from '@nestjs/common';
 import { GetPaginateInfo, Public, ResponseMessage, User } from 'src/decorators/customize';
@@ -38,15 +38,15 @@ export class UsersController {
     return this.usersService.createEmployer(createEmployerDto);
   }
 
-  @Post("/createAdmin")
+  @Post("/createEmployee")
   @UseGuards(UniqueGmail)
-  @ResponseMessage("Create a new User")
+  @ResponseMessage("Create a new employee")
   @Public()
-  createAdmin(@Body() createUserDto: CreateUserDto) {
+  createAdmin(@Body() createEmployee: CreateEmployee) {
     // tag Body = request.body
     // @Body là một overloading decorator, nó giúp chúng ta lấy dữ liệu từ request body ở nhiều kiểu dữ liệu khác nhau 
     // như string, number, object, array, ...
-    return this.usersService.createUser(createUserDto);
+    return this.usersService.createEmployee(createEmployee);
   }
 
 

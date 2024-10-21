@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateEmployerDto, CreateUserDto } from './dto/create-user.dto';
+import { CreateEmployee, CreateEmployerDto, CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { genSaltSync, hashSync, compareSync} from 'bcryptjs';
 import { PrismaService } from 'prisma/prisma.service';
@@ -56,7 +56,13 @@ export class UsersService {
       }
     });
   }
-
+  async createEmployee(createEmployee: CreateEmployee) {
+    let employer = await this.prismaService.employee.create({
+      data: {
+        ...createEmployee
+      }
+    });
+  }
   async register(registerDto: RegisterDto) {
     const { password } = registerDto;
     registerDto.password = this.getHashedPassword(password);

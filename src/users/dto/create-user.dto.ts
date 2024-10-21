@@ -40,9 +40,22 @@ export class CreateEmployerDto {
   @IsNotEmpty()
   @IsNumber()
   userId: number;
-  
 
 }
+
+export class CreateEmployee {
+  
+  @IsString()
+  skills: string;
+  @IsString()
+  certifications: string;
+  
+  @IsNotEmpty()
+  @IsNumber()
+  userId: number;
+
+}
+
 export class RefreshTokenDTO {
   @IsNotEmpty({ message: 'refreshToken k duoc de trong' })
   refreshToken: string;
