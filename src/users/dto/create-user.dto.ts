@@ -22,9 +22,9 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   name: string;
-
+  @IsNotEmpty()
   address: string;
-
+  @IsNotEmpty()
   role:string;
 
  

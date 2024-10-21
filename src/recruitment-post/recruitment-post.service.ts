@@ -1,11 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { CreateRecruitmentPostDto } from './dto/create-recruitment-post.dto';
 import { UpdateRecruitmentPostDto } from './dto/update-recruitment-post.dto';
+import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
 export class RecruitmentPostService {
+  constructor(
+    private prismaService: PrismaService,
+  ) {}
   create(createRecruitmentPostDto: CreateRecruitmentPostDto) {
-    return 'This action adds a new recruitmentPost';
+    return this.prismaService.jobPost.create({
+     data: {
+        ... createRecruitmentPostDto,
+        status:"Ok",
+       
+     },
+    });
   }
 
   findAll() {

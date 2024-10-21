@@ -20,6 +20,7 @@ export class UsersController {
   @Post()
   @UseGuards(UniqueGmail)
   @ResponseMessage("Create a new User")
+  @Public()
   create(@Body() createUserDto: CreateUserDto) {
     // tag Body = request.body
     // @Body là một overloading decorator, nó giúp chúng ta lấy dữ liệu từ request body ở nhiều kiểu dữ liệu khác nhau 

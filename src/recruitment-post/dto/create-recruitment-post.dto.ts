@@ -4,6 +4,7 @@ import {
   IsMongoId,
   IsNotEmpty,
   IsNotEmptyObject,
+  isNumber,
   IsNumber,
   IsObject,
   IsString,
@@ -13,16 +14,30 @@ import {
 } from 'class-validator';
 
 export class CreateRecruitmentPostDto {
-  
-  
+      @IsNotEmpty()
+      title :      string;
+      @IsNotEmpty()
+      description :  string;
+      @IsNotEmpty()
 
-  @IsNotEmpty()
-  title: string;
+      datePosted : Date;
+      @IsNotEmpty()
 
-  location
-  description
+      location   : string;
+      @IsNotEmpty()
 
- 
+      skills    :  string;
+      @IsNotEmpty()
+      @IsNumber()
+      salary    :  number;
+      @IsNotEmpty()
 
-  
+      deadline  :  Date;
+      @IsNotEmpty()
+
+      companyId :number;
+      @IsNotEmpty()
+
+      employerId:number;
+
 }
