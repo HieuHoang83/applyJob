@@ -39,6 +39,7 @@ export class UsersService {
   async create(createUserDto: CreateUserDto) {
     const hashedMyPassword = this.getHashedPassword(createUserDto.password);
     delete createUserDto.password;
+    
     let user = await this.prismaService.user.create({
      data: {
         ... createUserDto,

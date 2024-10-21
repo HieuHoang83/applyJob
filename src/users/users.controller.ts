@@ -20,6 +20,7 @@ export class UsersController {
   @Post()
   @UseGuards(UniqueGmail)
   @ResponseMessage("Create a new User")
+  @Public()
   create(@Body() createUserDto: CreateUserDto) {
     // tag Body = request.body
     // @Body là một overloading decorator, nó giúp chúng ta lấy dữ liệu từ request body ở nhiều kiểu dữ liệu khác nhau 
@@ -40,7 +41,7 @@ export class UsersController {
   }
 
   // lấy thông tin của 1 người dùng
-  
+
   @Public()
   @Get(':id')
   @UseGuards(CheckValidId)
@@ -48,7 +49,7 @@ export class UsersController {
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
   }
-
+// 
   // chỉnh sửa thông tin người dùng
   @Patch(':id')
   @UseGuards(CheckValidId)
