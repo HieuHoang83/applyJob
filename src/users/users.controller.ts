@@ -40,7 +40,7 @@ export class UsersController {
   }
 
   // lấy thông tin của 1 người dùng
-  
+
   @Public()
   @Get(':id')
   @UseGuards(CheckValidId)
@@ -48,7 +48,7 @@ export class UsersController {
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
   }
-
+// 
   // chỉnh sửa thông tin người dùng
   @Patch(':id')
   @UseGuards(CheckValidId)

@@ -106,7 +106,7 @@ model Record {
 }
 
 model JobPost {
-  id          Int            @id @default(autoincrement())
+  id          Int          @id @default(autoincrement())
   title       String
   description String
   datePosted  DateTime
@@ -115,14 +115,15 @@ model JobPost {
   salary      Float
   status      String
   deadline    DateTime
-  company     Company        @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  companyId   Int            @unique
+  company     Company      @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  companyId   Int
+  employer    Employer     @relation(fields: [employerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   evaluations Evaluation[]
-  applicants  Employee[]     @relation("JobPostApplicants")
-  records     Record[]       @relation("RecordJobPosts")
-  employer    Employer       @relation(fields: [employerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  employerId  Int            @unique
-  tags        TagOnJobPost[]
+  applicants  Employee[]   @relation("JobPostApplicants")
+  records     Record[]     @relation("RecordJobPosts")
+
+  employerId Int
+  tags       TagOnJobPost[]
 }
 
 model TagOnJobPost {
