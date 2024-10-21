@@ -12,7 +12,6 @@ export class RecruitmentPostService {
     return this.prismaService.jobPost.create({
      data: {
         ... createRecruitmentPostDto,
-        status:"Ok",
        
      },
     });

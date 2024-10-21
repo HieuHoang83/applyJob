@@ -27,11 +27,22 @@ export class CreateUserDto {
   @IsNotEmpty()
   role:string;
 
- 
-
-  
 }
 
+export class CreateEmployerDto {
+  
+  @IsString()
+  specialization: string;
+
+  @IsNumber()
+  companyId: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  userId: number;
+  
+
+}
 export class RefreshTokenDTO {
   @IsNotEmpty({ message: 'refreshToken k duoc de trong' })
   refreshToken: string;
