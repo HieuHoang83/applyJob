@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateRecruitmentPostDto } from './dto/create-recruitment-post.dto';
 import { UpdateRecruitmentPostDto } from './dto/update-recruitment-post.dto';
 import { PrismaService } from 'prisma/prisma.service';
@@ -17,18 +17,39 @@ export class RecruitmentPostService {
   }
 
   findAll() {
-    return `This action returns all recruitmentPost`;
+    return this.prismaService.jobPost.findMany({});
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} recruitmentPost`;
+    return this.prismaService.jobPost.findFirst({ where: {
+      id
+    },});
   }
 
-  update(id: number, updateRecruitmentPostDto: UpdateRecruitmentPostDto) {
-    return `This action updates a #${id} recruitmentPost`;
+ async update(id: number, updateRecruitmentPostDto: UpdateRecruitmentPostDto) {
+    const res = await this.findOne(id);
+    if (!res) {
+      throw new HttpException("Bài Đăng k tìm thấy", HttpStatus.NOT_FOUND);
+    }
+    return this.prismaService.user.update({
+      where: {
+        id
+      },
+      data: {
+        ...updateRecruitmentPostDto
+      }
+    })
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} recruitmentPost`;
+ async remove(id: number) {
+    const res = await this.findOne(id);
+    if (!res) {
+      throw new HttpException("Bài Đăng k tìm thấy", HttpStatus.NOT_FOUND);
+    }
+    return this.prismaService.user.delete({
+      where: {
+        id
+      }
+    })
   }
 }

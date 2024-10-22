@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { PrismaService } from 'prisma/prisma.service';
@@ -18,18 +18,39 @@ export class CompanyService {
   }
 
   findAll() {
-    return `This action returns all company`;
+    return this.prismaService.company.findMany({});
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} company`;
+    return this.prismaService.company.findFirst({ where: {
+      id
+    },});
   }
-
-  update(id: number, updateCompanyDto: UpdateCompanyDto) {
-    return `This action updates a #${id} company`;
+  async update(id: number, updateCompanyDto: UpdateCompanyDto) {
+    const res = await this.findOne(id);
+    if (!res) {
+      throw new HttpException("Bài Đăng k tìm thấy", HttpStatus.NOT_FOUND);
+    }
+    return this.prismaService.company.update({
+      where: {
+        id
+      },
+      data: {
+        ...updateCompanyDto
+      }
+    })
   }
+ 
 
-  remove(id: number) {
-    return `This action removes a #${id} company`;
+  async remove(id: number) {
+    const res = await this.findOne(id);
+    if (!res) {
+      throw new HttpException("Bài Đăng k tìm thấy", HttpStatus.NOT_FOUND);
+    }
+    return this.prismaService.company.delete({
+      where: {
+        id
+      }
+    })
   }
 }

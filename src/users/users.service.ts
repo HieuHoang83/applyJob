@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateEmployee, CreateEmployerDto, CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { genSaltSync, hashSync, compareSync} from 'bcryptjs';
 import { PrismaService } from 'prisma/prisma.service';
@@ -36,7 +36,7 @@ export class UsersService {
     return res;
   }
 
-  async create(createUserDto: CreateUserDto) {
+  async createUser(createUserDto: CreateUserDto) {
     const hashedMyPassword = this.getHashedPassword(createUserDto.password);
     delete createUserDto.password;
     
@@ -49,7 +49,20 @@ export class UsersService {
     delete user.password;
     return user;
   }
-
+  async createEmployer(createEmployerDto: CreateEmployerDto) {
+    let employer = await this.prismaService.employer.create({
+      data: {
+        ...createEmployerDto
+      }
+    });
+  }
+  async createEmployee(createEmployee: CreateEmployee) {
+    let employer = await this.prismaService.employee.create({
+      data: {
+        ...createEmployee
+      }
+    });
+  }
   async register(registerDto: RegisterDto) {
     const { password } = registerDto;
     registerDto.password = this.getHashedPassword(password);

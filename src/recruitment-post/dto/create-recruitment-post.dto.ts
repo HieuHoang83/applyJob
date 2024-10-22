@@ -22,7 +22,6 @@ export class CreateRecruitmentPostDto {
 
       datePosted : Date;
       @IsNotEmpty()
-
       location   : string;
       @IsNotEmpty()
 

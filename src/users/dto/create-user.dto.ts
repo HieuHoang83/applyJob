@@ -27,9 +27,33 @@ export class CreateUserDto {
   @IsNotEmpty()
   role:string;
 
- 
+}
 
+export class CreateEmployerDto {
   
+  @IsString()
+  specialization: string;
+
+  @IsNumber()
+  companyId: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  userId: number;
+
+}
+
+export class CreateEmployee {
+  
+  @IsString()
+  skills: string;
+  @IsString()
+  certifications: string;
+  
+  @IsNotEmpty()
+  @IsNumber()
+  userId: number;
+
 }
 
 export class RefreshTokenDTO {
