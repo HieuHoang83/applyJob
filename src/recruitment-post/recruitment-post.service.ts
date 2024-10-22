@@ -11,8 +11,7 @@ export class RecruitmentPostService {
   create(createRecruitmentPostDto: CreateRecruitmentPostDto) {
     return this.prismaService.jobPost.create({
      data: {
-        ... createRecruitmentPostDto,
-       
+        ... createRecruitmentPostDto
      },
     });
   }
