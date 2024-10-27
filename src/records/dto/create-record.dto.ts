@@ -16,7 +16,7 @@ export class CreateRecordDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  jobId: number
+  recruitmentPostId: number
 
   @ApiProperty()
   @IsNotEmpty()

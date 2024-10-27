@@ -43,6 +43,7 @@ export class FilesService {
     try {
       return await this.prismaservice.file.create({
         data: {
+          name: file.originalname,
           url: downloadURL,
           size: file.size,
           mimeType: file.mimetype,
@@ -63,5 +64,14 @@ export class FilesService {
     } catch (error) {
       throw new HttpException('File not found', 404);
     }
+  }
+
+  async findOne(req: { url: string }) {
+    const file = await this.prismaservice.file.findFirst({
+      where: {
+        url: req.url,
+      },
+    });
+    return file;
   }
 }

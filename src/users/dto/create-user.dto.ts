@@ -1,6 +1,8 @@
 import { Type } from 'class-transformer';
+import { Role } from 'utils/constant';
 import {
   IsEmail,
+  IsEnum,
   IsMongoId,
   IsNotEmpty,
   IsNotEmptyObject,
@@ -22,38 +24,39 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   name: string;
+
   @IsNotEmpty()
   address: string;
-  @IsNotEmpty()
-  role:string;
 
+  @IsNotEmpty()
+  phone: string;
+
+  @IsNotEmpty()
+  @IsEnum(Role)
+  role:string;
 }
 
 export class CreateEmployerDto {
-  
-  @IsString()
-  specialization: string;
+  @IsNotEmpty()
+  hiringDate: Date;
 
-  @IsNumber()
-  companyId: number;
+  @IsNotEmpty()
+  department: string;
+
+  @IsNotEmpty()
+  position: string;
 
   @IsNotEmpty()
   @IsNumber()
-  userId: number;
-
+  companyId: number;
 }
 
 export class CreateEmployee {
-  
   @IsString()
   skills: string;
+
   @IsString()
   certifications: string;
-  
-  @IsNotEmpty()
-  @IsNumber()
-  userId: number;
-
 }
 
 export class RefreshTokenDTO {

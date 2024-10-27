@@ -1,14 +1,15 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty } from "class-validator";
-
+import { IsEnum, IsNotEmpty } from "class-validator";
+import { Category } from "utils/constant";
 export class CreateTagDto {
   @ApiProperty()
   @IsNotEmpty()
-  name: string;
+  description: string;
 
   @ApiProperty()
   @IsNotEmpty()
-  description: string;
+  @IsEnum(Category)
+  category: string;
 }
 
 export class AddTagToJobPostDto {

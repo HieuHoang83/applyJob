@@ -6,7 +6,9 @@ import {
   ParseFilePipeBuilder,
   HttpStatus,
   Headers,
-  HttpException
+  HttpException,
+  Get,
+  Param
 } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { DeleteFileDto } from './dto/delete-file.dto';
@@ -31,7 +33,7 @@ export class FilesController {
       new ParseFilePipeBuilder()
         .addFileTypeValidator({
           fileType:
-            /^(image\/jpg|image\/jpeg|image\/png|text\/plain|application\/pdf|application\/vnd.openxmlformats-officedocument.wordprocessingml.document)$/,
+            /^(image\/webp|image\/jpg|image\/jpeg|image\/png|text\/plain|application\/pdf|application\/vnd.openxmlformats-officedocument.wordprocessingml.document)$/,
         })
         .addMaxSizeValidator({
           maxSize: 5000 * 1024,
@@ -58,5 +60,10 @@ export class FilesController {
     @Body() deleteFileDto: DeleteFileDto
   ) {
     return this.filesService.remove(deleteFileDto);
+  }
+
+  @Get()
+  findOneByUrl(@Headers() req: { url: string }) {
+    return this.filesService.findOne(req);
   }
 }

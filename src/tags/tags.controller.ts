@@ -42,7 +42,7 @@ export class TagsController {
     return this.tagsService.remove(+id);
   }
 
-  @Post('/tag-jobPost')
+  @Post('/tag-job-post')
   @ResponseMessage('Add tag to jobPost successfully!')
   addTagToJobPost(@Body() addTagToJobPostDto: AddTagToJobPostDto) {
     return this.tagsService.addTagToJobPost(addTagToJobPostDto);

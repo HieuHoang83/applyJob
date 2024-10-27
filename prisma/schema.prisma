@@ -21,42 +21,95 @@ model User {
   id              Int             @id @default(autoincrement())
   email           String          @unique
   name            String
-  phone           String?
-  address         String?
   gender          String?
   age             Int?
-  avatar          File?
+  avatar          String?
   password        String
   role            String
   refreshToken    String?
+  provider        String          @default("credentials") 
+  emailVerified   Boolean         @default(false)
   historyStatuses HistoryStatus[]
   employee        Employee?
   employer        Employer?
   admin           Admin?
+  superAdmin      SuperAdmin?
+  deletedAt       DateTime?
+  deleted         Boolean         @default(false)
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @default(now()) @updatedAt
 }
 
 model Employee {
-  skills         String?
-  certifications String?
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId         Int          @unique
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId         Int              @unique
+  phone          String?
+  address        String?
   records        Record[]
   evaluations    Evaluation[]
+  follow         EmployeeFollowCompany[]
+  educations     Education[]
+  experiences    Experience[]
+  certificates   Certificate[]
 
   @@id([userId])
 }
 
+model Education {
+  id          Int      @id @default(autoincrement())
+  school      String
+  major       String
+  description String?
+  startDate   DateTime
+  endDate     DateTime
+  employee    Employee @relation(fields: [employeeId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  employeeId  Int
+}
+
+model Experience {
+  id          Int      @id @default(autoincrement())
+  company     String
+  position    String
+  description String?
+  url         String?
+  image       String?
+  startDate   DateTime
+  endDate     DateTime
+  employee    Employee @relation(fields: [employeeId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  employeeId  Int
+}
+
+model Certificate {
+  id            Int      @id @default(autoincrement())
+  name          String
+  organization  String
+  url           String
+  image         String
+  verifiedDate  DateTime
+  employee      Employee @relation(fields: [employeeId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  employeeId    Int
+}
+
+model EmployeeFollowCompany {
+  employeeId  Int
+  employee    Employee   @relation(fields: [employeeId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  companyId   Int
+  company     Company    @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @default(now()) @updatedAt
+
+  @@id([employeeId, companyId]) // Composite primary key
+}
+
 model Employer {
-  userId         Int       @unique
-  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  hiringDate     DateTime?
-  department     String 
-  position       String
-  company        Company   @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  companyId      Int
-  jobPosts       JobPost[]
+  userId                Int       @unique
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  hiringDate            DateTime?
+  department            String 
+  position              String
+  company               Company   @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  companyId             Int
+  recruitmentPosts      RecruitmentPost[]
   
   @@id([companyId, userId]) // Composite primary key
 }
@@ -64,52 +117,48 @@ model Employer {
 model Company {
   id              Int        @id @default(autoincrement())
   name            String
-  businessLicense String
+  description     String
+  url             String  
   industry        String
   size            String
   address         String
   employers       Employer[]
-  jobPosts        JobPost[]
-  logo            File?      @relation(fields: [logoId], references: [id])
-  logoId          Int?       @unique
+  logo            String?
+  cover           String?
+  followed        EmployeeFollowCompany[]
 }
 
 model Evaluation {
-  id         Int      @id @default(autoincrement())
-  comment    String?
-  rating     Float
-  emotion    String?
-  employee   Employee @relation(fields: [employeeId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
-  employeeId Int
-  jobPost    JobPost  @relation(fields: [jobPostId], references: [id])
-  jobPostId  Int
+  id                   Int             @id @default(autoincrement())
+  rating               Float
+  saved                Boolean         @default(false)
+  employee             Employee        @relation(fields: [employeeId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  employeeId           Int
+  recruitmentPost      RecruitmentPost  @relation(fields: [recruitmentPostId], references: [id])
+  recruitmentPostId    Int
 }
 
 model Record {
-  id              Int             @id @default(autoincrement())
-  title           String
-  description     String
-  owner           Employee        @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
-  ownerId         Int
-  historyStatuses HistoryStatus[]
-  jobId           Int
-  job             JobPost         @relation(fields: [jobId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  fileCv          File            @relation(fields: [fileCvId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  fileCvId        Int
+  id                  Int             @id @default(autoincrement())
+  title               String
+  description         String
+  owner               Employee        @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  ownerId             Int
+  historyStatuses     HistoryStatus[]
+  recruitmentPostId   Int
+  recruitmentPost     RecruitmentPost  @relation(fields: [recruitmentPostId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  fileCv              File            @relation(fields: [fileCvId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  fileCvId            Int
 }
 
 model File {
   id         Int       @id @default(autoincrement())
+  name       String    @default("Untitled")
   folderType String
   mimeType   String?
   size       Int?
   url        String
   record     Record[]
-  company    Company?
-  userId     Int?      @unique
-  user       User?     @relation(fields: [userId], references: [id])
-  jobPostId  Int?
-  jobPost    JobPost?  @relation(fields: [jobPostId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @default(now()) @updatedAt
 }
@@ -124,30 +173,38 @@ model HistoryStatus {
   recordId    Int
 }
 
-model JobPost {
-  id          Int            @id @default(autoincrement())
-  title       String
-  description String
-  datePosted  DateTime
-  location    String
-  skills      String
-  salary      Float
-  deadline    DateTime
-  company     Company        @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  companyId   Int
-  evaluations Evaluation[]
-  records     Record[]
-  employer    Employer       @relation(fields: [employerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
-  employerId  Int
-  tags        TagOnJobPost[]
-  covers      File[]
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @default(now()) @updatedAt
+model RecruitmentPost {
+  id              Int          @id @default(autoincrement())
+  title           String       // Tuyen dung vi tri gi
+  description     String       // Mo ta cong viec
+  jobDescription  JobDescription?
+  evaluations     Evaluation[]
+  records         Record[]
+  employer        Employer     @relation(fields: [employerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  employerId      Int
+  tags            TagOnJobPost[]
+  datePosted      DateTime
+  deadline        DateTime
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @default(now()) @updatedAt
+}
+
+model JobDescription {
+  id                    Int                 @id @default(autoincrement())
+  location              String              // Dia diem lam viec
+  level                 String              @default("staff")// Junior, Senior, Intern
+  experience            String              // 1 year, 2 years, 3 years, 4 years, 5 years
+  salary                String              // Luong
+  quantity              Int                 @default(1) // So luong tuyen dung
+  employmentType        String              // Full-time, Part-time, Remote
+  gender                String              @default("Not required")// yeu cau gioi tinh
+  recruitmentPost       RecruitmentPost     @relation(fields: [recruitmentPostId], references: [id])
+  recruitmentPostId     Int                 @unique
 }
 
 model TagOnJobPost {
   jobPostId Int
-  jobPost   JobPost @relation(fields: [jobPostId], references: [id])
+  jobPost   RecruitmentPost @relation(fields: [jobPostId], references: [id])
   tagId     Int
   tag       Tag     @relation(fields: [tagId], references: [id])
 
@@ -156,8 +213,8 @@ model TagOnJobPost {
 
 model Tag {
   id          Int            @id @default(autoincrement())
-  name        String
   description String
+  category    String
   jobPosts    TagOnJobPost[]
 }
 
@@ -174,6 +231,16 @@ model Admin {
   userId           Int           @unique
   verificationCode String?
   activityLogs     ActivityLog[]
+  superAdminId     Int?
+  superAdmin       SuperAdmin?   @relation(fields: [superAdminId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  
+  @@id([userId])
+}
+
+model SuperAdmin {
+  userId  Int    @unique
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  admin Admin[]
 
   @@id([userId])
 }

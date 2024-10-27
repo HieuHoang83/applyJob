@@ -1,20 +1,27 @@
-// import { Injectable, CanActivate, ExecutionContext, BadRequestException } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, BadRequestException, ForbiddenException } from '@nestjs/common';
 
-// @Injectable()
-// export class ExistRole implements CanActivate {
-//   constructor(private readonly rolesService: RolesService) {}
+@Injectable()
+export class CheckAccessToRoute implements CanActivate {
+  private readonly role: string;
 
-//   async canActivate(
-//     context: ExecutionContext,
-//   ): Promise<any> {
-//     const request = context.switchToHttp().getRequest();
-//     const name = request.body.name
+  constructor(role: string) {
+    this.role = role;
+  }
 
-//     // Check if the role is unique
-//     const role = await this.rolesService.findRoleByName(name);
-//     if (role) {
-//       throw new BadRequestException(`Role ${name} already exists`);
-//     }
-//     return true;
-//   }
-// }
+  async canActivate(
+    context: ExecutionContext,
+  ): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    const user = request.user;
+
+    if (!user) {
+      throw new BadRequestException('User not found in request');
+    }
+
+    if (user.role !== this.role) {
+      throw new ForbiddenException(`Access denied for role: ${user.role}`);
+    }
+
+    return true;
+  }
+}

@@ -23,16 +23,12 @@ export class AuthService {
     if (user) {
       const isValid = this.usersService.isValidPasword(pass, user.password);
       if (isValid) {
-        const userRole = user.role as unknown as { id: number, name: string };
 
         return {
           id: user.id,
           email: user.email,
           name: user.name,
-          role: userRole ? {
-            id: userRole.id,
-            name: userRole.name
-          } : null
+          role: user.role
         }
       };
     }

@@ -1,42 +1,57 @@
 import { Type } from 'class-transformer';
 import {
-  IsEmail,
-  IsMongoId,
+  IsDate,
   IsNotEmpty,
-  IsNotEmptyObject,
-  isNumber,
   IsNumber,
-  IsObject,
+  IsOptional,
   IsString,
   MaxLength,
-  MinLength,
-  ValidateNested,
 } from 'class-validator';
 
 export class CreateRecruitmentPostDto {
-      @IsNotEmpty()
-      title :      string;
-      @IsNotEmpty()
-      description :  string;
-      @IsNotEmpty()
+  @IsNotEmpty()
+  @IsString()
+  @MaxLength(255)
+  title: string; // Tuyển dụng vị trí gì
 
-      datePosted : Date;
-      @IsNotEmpty()
-      location   : string;
-      @IsNotEmpty()
+  @IsNotEmpty()
+  @IsString()
+  description: string; // Mô tả công việc
 
-      skills    :  string;
-      @IsNotEmpty()
-      @IsNumber()
-      salary    :  number;
-      @IsNotEmpty()
+  @IsNotEmpty()
+  @IsString()
+  location: string; // Địa điểm làm việc
 
-      deadline  :  Date;
-      @IsNotEmpty()
+  @IsOptional()
+  @IsString()
+  level: string = 'staff'; // Junior, Senior, Intern (default: staff)
 
-      companyId :number;
-      @IsNotEmpty()
+  @IsNotEmpty()
+  @IsString()
+  experience: string; // Kinh nghiệm (1 year, 2 years, etc.)
 
-      employerId:number;
+  @IsNotEmpty()
+  salary: string; // Lương
 
+  @IsOptional()
+  @IsNumber()
+  quantity: number = 1; // Số lượng tuyển dụng (default: 1)
+
+  @IsNotEmpty()
+  @IsString()
+  employmentType: string; // Full-time, Part-time, Remote
+
+  @IsOptional()
+  @IsString()
+  gender: string = 'Not required'; // Yêu cầu giới tính (default: Not required)
+
+  @IsNotEmpty()
+  @IsDate()
+  @Type(() => Date)
+  datePosted: Date; // Ngày đăng tin
+
+  @IsNotEmpty()
+  @IsDate()
+  @Type(() => Date)
+  deadline: Date; // Hạn nộp đơn
 }

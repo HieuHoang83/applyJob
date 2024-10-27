@@ -3,14 +3,10 @@ import { IsNotEmpty } from 'class-validator';
 export class CreateEvaluationDto {
   @ApiProperty()
   @IsNotEmpty()
-  comment: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
   rating: number;
 
   @ApiProperty()
-  emotion: string;
+  saved: boolean;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -18,5 +14,5 @@ export class CreateEvaluationDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  jobPostId: number;
+  recruitmentPostId: number;
 }

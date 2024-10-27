@@ -20,17 +20,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   // trả về response sau khi xác thực token thành công
   async validate(payload: IUser) {
     const { id, email, name, role } = payload;
-    
-    // get permissions from role
-    let foundRole = null
-    // if (role?.id) foundRole = await this.roleService.findOne(role.id);
-
     return { 
       id, 
       email, 
       name,
-      role,
-      permissions: foundRole?.permission ?? []
+      role
     };
   }
 }

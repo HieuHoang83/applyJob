@@ -2,16 +2,20 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { RecruitmentPostService } from './recruitment-post.service';
 import { CreateRecruitmentPostDto } from './dto/create-recruitment-post.dto';
 import { UpdateRecruitmentPostDto } from './dto/update-recruitment-post.dto';
-import { Public } from 'src/decorators/customize';
+import { GetPaginateInfo, Public, User } from 'src/decorators/customize';
+import { IUser } from 'src/interface/users.interface';
+import { PaginateInfo } from 'src/interface/paginate.interface';
 
 @Controller('recruitment-post')
 export class RecruitmentPostController {
   constructor(private readonly recruitmentPostService: RecruitmentPostService) {}
 
   @Post()
-  @Public()
-  create(@Body() createRecruitmentPostDto: CreateRecruitmentPostDto) {
-    return this.recruitmentPostService.create(createRecruitmentPostDto);
+  create(
+    @Body() createRecruitmentPostDto: CreateRecruitmentPostDto,
+    @User() user: IUser
+  ) {
+    return this.recruitmentPostService.create(createRecruitmentPostDto, user);
   }
 
   @Public()
@@ -22,8 +26,10 @@ export class RecruitmentPostController {
 
   @Get()
   @Public()
-  findAll() {
-    return this.recruitmentPostService.findAll();
+  findAll(
+    @GetPaginateInfo() paginate: PaginateInfo
+  ) {
+    return this.recruitmentPostService.findAll(paginate);
   }
   
   @Patch(':id')
