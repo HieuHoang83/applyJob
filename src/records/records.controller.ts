@@ -5,7 +5,9 @@ import { UpdateRecordDto } from './dto/update-record.dto';
 import { GetPaginateInfo, User } from 'src/decorators/customize';
 import { IUser } from 'src/interface/users.interface';
 import { PaginateInfo } from 'src/interface/paginate.interface';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('records')
 @Controller('records')
 export class RecordsController {
   constructor(private readonly recordsService: RecordsService) {}

@@ -6,7 +6,9 @@ import { ResponseMessage } from 'src/decorators/customize';
 import { CheckValidId } from 'src/core/id.guard';
 import { GetPaginateInfo } from 'src/decorators/customize';
 import { PaginateInfo } from 'src/interface/paginate.interface';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('evaluations')
 @Controller('evaluations')
 export class EvaluationsController {
   constructor(private readonly evaluationsService: EvaluationsService) {}

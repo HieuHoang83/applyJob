@@ -4,7 +4,9 @@ import { CreateTagDto, AddTagToJobPostDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
 import { ResponseMessage } from 'src/decorators/customize';
 import { CheckValidId } from 'src/core/id.guard';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('tags')
 @Controller('tags')
 export class TagsController {
   constructor(private readonly tagsService: TagsService) {}

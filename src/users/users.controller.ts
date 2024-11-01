@@ -50,9 +50,9 @@ export class UsersController {
     return this.usersService.createUser(createUserDto);
   }
 
-  @Post('/create-employer')
+  @Post('/new-employer')
   @ResponseMessage('Create a new employer')
-  @UseGuards(new CheckAccessToRoute(Role.EMPLOYER))
+  // @UseGuards(new CheckAccessToRoute(Role.EMPLOYER))
   createEmployer(
     @Body() createEmployerDto: CreateEmployerDto,
     @User() user: IUser
@@ -63,10 +63,10 @@ export class UsersController {
     return this.usersService.createEmployer(createEmployerDto, user);
   }
 
-  @Post('/create-employee')
+  @Post('/new-employee')
   @ResponseMessage('Create a new employee')
-  @UseGuards(new CheckAccessToRoute(Role.EMPLOYEE))
-  createAdmin(
+  // @UseGuards(new CheckAccessToRoute(Role.EMPLOYEE))
+  createEmployee(
     @Body() createEmployee: CreateEmployee,
     @User() user: IUser
   ) {

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
+// import { UsersModule } from './users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './auth/auth.module';
@@ -11,6 +11,12 @@ import { RecordsModule } from './records/records.module';
 import { FilesModule } from './files/files.module';
 import { TagsModule } from './tags/tags.module';
 import { EvaluationsModule } from './evaluations/evaluations.module';
+import { CertificatesModule } from './certificates/certificates.module';
+import { ExperiencesModule } from './experiences/experiences.module';
+import { EducationsModule } from './educations/educations.module';
+import { EmployeesModule } from './employees/employees.module';
+import { EmployersModule } from './employers/employers.module';
+import { AdminsModule } from './admins/admins.module';
 
 @Module({
   imports: [
@@ -24,7 +30,7 @@ import { EvaluationsModule } from './evaluations/evaluations.module';
         limit: 10, //gioi han trong n giay do
       },
     ]),
-    UsersModule,
+    // UsersModule,
     AuthModule,
     RecruitmentPostModule,
     CompanyModule,
@@ -32,6 +38,12 @@ import { EvaluationsModule } from './evaluations/evaluations.module';
     FilesModule,
     TagsModule,
     EvaluationsModule,
+    CertificatesModule,
+    ExperiencesModule,
+    EducationsModule,
+    EmployeesModule,
+    EmployersModule,
+    AdminsModule
   ],
   controllers: [AppController],
   providers: [AppService],

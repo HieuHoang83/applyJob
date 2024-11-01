@@ -1,5 +1,5 @@
 import { Injectable, CanActivate, ExecutionContext, BadRequestException } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service'; // Import the service
+import { UsersService } from 'src/employee/users.service'; // Import the service
 
 @Injectable()
 export class UniqueGmail implements CanActivate {

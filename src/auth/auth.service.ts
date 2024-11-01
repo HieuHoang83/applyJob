@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
+import { UsersService } from '../employee/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { IUser } from 'src/interface/users.interface';
 import { RegisterDto } from './dto/register-user.dto';
@@ -82,7 +82,8 @@ export class AuthService {
     const newUser = await this.usersService.register(regiterDto);
     return {
       id: newUser?.id,
-     
+      email: newUser?.email,
+      name: newUser?.name,
     };
   }
 

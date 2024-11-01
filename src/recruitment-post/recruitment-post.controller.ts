@@ -5,7 +5,9 @@ import { UpdateRecruitmentPostDto } from './dto/update-recruitment-post.dto';
 import { GetPaginateInfo, Public, User } from 'src/decorators/customize';
 import { IUser } from 'src/interface/users.interface';
 import { PaginateInfo } from 'src/interface/paginate.interface';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('recruitment-posts')
 @Controller('recruitment-post')
 export class RecruitmentPostController {
   constructor(private readonly recruitmentPostService: RecruitmentPostService) {}

@@ -20,8 +20,15 @@ export class RegisterDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  address: string;
+  age: number;
 
-  role:string;
- 
+  @ApiProperty()
+  @IsNotEmpty()
+  gender: string;
+
+  @ApiProperty()
+  provider: string;
+
+  @ApiProperty()
+  avatar: string;
 }

@@ -9,7 +9,7 @@ import { PaginateInfo } from 'src/interface/paginate.interface';
 export class RecruitmentPostService {
   constructor(private prismaService: PrismaService) {}
   create(createRecruitmentPostDto: CreateRecruitmentPostDto, user: IUser) {
-    return this.prismaService.jobPost.create({
+    return this.prismaService.recruitmentPost.create({
       data: {
         ...createRecruitmentPostDto,
         employerId: user.id,
@@ -31,13 +31,13 @@ export class RecruitmentPostService {
     } = info;
 
     // Get total items count
-    const totalItems = await this.prismaService.jobPost.count({
+    const totalItems = await this.prismaService.recruitmentPost.count({
       where: filter,
     });
     const totalPages = Math.ceil(totalItems / defaultLimit);
 
     // Retrieve data with Prisma
-    const data = await this.prismaService.jobPost.findMany({
+    const data = await this.prismaService.recruitmentPost.findMany({
       where: filter,
       skip: offset,
       take: defaultLimit,
@@ -71,7 +71,7 @@ export class RecruitmentPostService {
   }
 
   async findOne(id: number) {
-    return await this.prismaService.jobPost.findFirst({
+    return await this.prismaService.recruitmentPost.findFirst({
       where: {
         id,
       },

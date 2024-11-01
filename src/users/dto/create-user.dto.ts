@@ -13,6 +13,7 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
   @IsEmail()
@@ -26,7 +27,7 @@ export class CreateUserDto {
   name: string;
 
   @IsNotEmpty()
-  address: string;
+  age: number;
 
   @IsNotEmpty()
   phone: string;
@@ -46,17 +47,17 @@ export class CreateEmployerDto {
   @IsNotEmpty()
   position: string;
 
-  @IsNotEmpty()
-  @IsNumber()
   companyId: number;
 }
 
 export class CreateEmployee {
-  @IsString()
-  skills: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  phone: string;
 
-  @IsString()
-  certifications: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  address: string;
 }
 
 export class RefreshTokenDTO {
