@@ -113,6 +113,23 @@ model Company {
   employers       Employer[]
   logo            String?
   cover           String?
+  domains         DomainOnCompany[]
+}
+
+model Domain {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  company     DomainOnCompany[]
+}
+
+model DomainOnCompany {
+  domainId    Int
+  domain      Domain @relation(fields: [domainId], references: [id])
+  companyId   Int
+  company     Company @relation(fields: [companyId], references: [id])
+
+  @@id([domainId, companyId]) // Composite primary key
 }
 
 model Evaluation {
@@ -168,7 +185,7 @@ model RecruitmentPost {
   records         Record[]
   employer        Employer     @relation(fields: [employerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   employerId      Int
-  tags            TagOnJobPost[]
+  category        JobCategoryOnJobPost[]
   datePosted      DateTime
   deadline        DateTime
   createdAt       DateTime     @default(now())
@@ -188,20 +205,27 @@ model JobDescription {
   recruitmentPostId     Int                 @unique
 }
 
-model TagOnJobPost {
-  jobPostId Int
-  jobPost   RecruitmentPost @relation(fields: [jobPostId], references: [id])
-  tagId     Int
-  tag       Tag     @relation(fields: [tagId], references: [id])
+model JobCategoryOnJobPost {
+  jobPostId       Int
+  jobPost         RecruitmentPost @relation(fields: [jobPostId], references: [id])
+  categoryId      String
+  category        JobCategory @relation(fields: [categoryId], references: [name])
 
-  @@id([jobPostId, tagId]) // Composite primary key
+  @@id([jobPostId, categoryId]) // Composite primary key
 }
 
-model Tag {
-  id          Int            @id @default(autoincrement())
-  description String
-  category    String
-  jobPosts    TagOnJobPost[]
+model JobCategory {
+  name        String            @id
+  job         String
+  jobPosts    JobCategoryOnJobPost[]
+  positions   Position[]
+}
+
+model Position {
+  JobCategoryId   String
+  JobCategory     JobCategory @relation(fields: [JobCategoryId], references: [name])
+  name            String
+  @@id([JobCategoryId, name]) // Composite primary key
 }
 
 model ActivityLog {

@@ -9,7 +9,6 @@ import { RecruitmentPostModule } from './recruitment-post/recruitment-post.modul
 import { CompanyModule } from './company/company.module';
 import { RecordsModule } from './records/records.module';
 import { FilesModule } from './files/files.module';
-import { TagsModule } from './tags/tags.module';
 import { EvaluationsModule } from './evaluations/evaluations.module';
 import { CertificatesModule } from './certificates/certificates.module';
 import { ExperiencesModule } from './experiences/experiences.module';
@@ -17,7 +16,7 @@ import { EducationsModule } from './educations/educations.module';
 import { EmployeesModule } from './employees/employees.module';
 import { EmployersModule } from './employers/employers.module';
 import { AdminsModule } from './admins/admins.module';
-
+import { DomainsModule } from './domains/domains.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -36,14 +35,14 @@ import { AdminsModule } from './admins/admins.module';
     CompanyModule,
     RecordsModule,
     FilesModule,
-    TagsModule,
     EvaluationsModule,
     CertificatesModule,
     ExperiencesModule,
     EducationsModule,
     EmployeesModule,
     EmployersModule,
-    AdminsModule
+    AdminsModule,
+    DomainsModule
   ],
   controllers: [AppController],
   providers: [AppService],
