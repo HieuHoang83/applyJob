@@ -9,11 +9,11 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     super();
   }
   // override validate method from PassportStrategy type Local
-  async validate(username: string, password: string): Promise<any> {
-    const user = await this.authService.validateUser(username, password);
-    if (!user) {
-      throw new UnauthorizedException("Username or password is invalid");
-    }
-    return user;
-  }
+  // async validate(username: string, password: string): Promise<any> {
+  //   const user = await this.authService.validateUser(username, password);
+  //   if (!user) {
+  //     throw new UnauthorizedException("Username or password is invalid");
+  //   }
+  //   return user;
+  // }
 }

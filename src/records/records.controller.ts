@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { RecordsService } from './records.service';
 import { CreateRecordDto } from './dto/create-record.dto';
 import { UpdateRecordDto } from './dto/update-record.dto';
@@ -12,37 +20,37 @@ import { ApiTags } from '@nestjs/swagger';
 export class RecordsController {
   constructor(private readonly recordsService: RecordsService) {}
 
-  @Post()
-  create(
-    @Body() createRecordDto: CreateRecordDto,
-    @User() user: IUser
-  ) {
-    return this.recordsService.create(createRecordDto, user);
-  }
+  // @Post()
+  // create(
+  //   @Body() createRecordDto: CreateRecordDto,
+  //   @User() user: IUser
+  // ) {
+  //   return this.recordsService.create(createRecordDto, user);
+  // }
 
-  @Get()
-  findAll(
-    @GetPaginateInfo() paginateInfo: PaginateInfo
-  ) {
-    return this.recordsService.findAll(paginateInfo);
-  }
+  // @Get()
+  // findAll(
+  //   @GetPaginateInfo() paginateInfo: PaginateInfo
+  // ) {
+  //   return this.recordsService.findAll(paginateInfo);
+  // }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.recordsService.findOne(+id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.recordsService.findOne(+id);
+  // }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string, 
-    @Body() updateRecordDto: UpdateRecordDto,
-    @User() user: IUser
-  ) {
-    return this.recordsService.update(+id, updateRecordDto, user);
-  }
+  // @Patch(':id')
+  // update(
+  //   @Param('id') id: string,
+  //   @Body() updateRecordDto: UpdateRecordDto,
+  //   @User() user: IUser
+  // ) {
+  //   return this.recordsService.update(+id, updateRecordDto, user);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.recordsService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.recordsService.remove(+id);
+  // }
 }
