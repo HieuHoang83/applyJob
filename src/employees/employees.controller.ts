@@ -19,7 +19,7 @@ export class EmployeesController {
   @Post()
   @Public()
   create() {
-    return 'ok';
+    return this.employeesService.create();
   }
 
   @Get()
@@ -27,9 +27,10 @@ export class EmployeesController {
     return this.employeesService.findAll();
   }
 
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.employeesService.findOne(+id);
+    return this.employeesService.findOneById(+id);
   }
 
   @Patch(':id')
