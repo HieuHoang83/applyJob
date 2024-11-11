@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
+import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
 export class EmployeesService {
-  create(createEmployeeDto: CreateEmployeeDto) {
-    return 'This action adds a new employee';
+  constructor(private prismaService: PrismaService) {}
+  create() {
+    //const result = await prismaService.$queryRaw "INSERT INTO tableName (email, name, gender, age, avatar, password, verificationCode, superAdminId) VALUES  ('example@example.com', 'John Doe', 'male', 25, 'avatar_url', 'hashed_password', 'verification_code', 1)";
   }
 
   findAll() {

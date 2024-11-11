@@ -8,8 +8,8 @@
 // npx prisma generate sau khi thay doi schema
 // npx prisma studio
 generator client {
-  provider = "prisma-client-js"
-  // previewFeatures = ["typedSql"] this features not support for sql-server
+  provider        = "prisma-client-js"
+  previewFeatures = ["typedSql"]
 }
 
 datasource db {
@@ -18,28 +18,28 @@ datasource db {
 }
 
 model Employee {
-  id              Int      @id @default(autoincrement())
-  phone           String?
-  address         String?
-  email           String          @unique
-  name            String
-  gender          String?
-  age             Int?
-  avatar          String?
-  password        String
-  refreshToken    String?
-  provider        String          @default("credentials") 
-  emailVerified   Boolean         @default(false)
-  records         Record[]
-  evaluations     Evaluation[]
-  educations      Education[]
-  experiences     Experience[]
-  certificates    Certificate[]
-  
-  deletedAt       DateTime?
-  deleted         Boolean         @default(false)
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @default(now()) @updatedAt
+  id            Int           @id @default(autoincrement())
+  phone         String?
+  address       String?
+  email         String        @unique
+  name          String
+  gender        String?
+  age           Int?
+  avatar        String?
+  password      String
+  refreshToken  String?
+  provider      String        @default("credentials")
+  emailVerified Boolean       @default(false)
+  records       Record[]
+  evaluations   Evaluation[]
+  educations    Education[]
+  experiences   Experience[]
+  certificates  Certificate[]
+
+  deletedAt DateTime?
+  deleted   Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
 }
 
 model Education {
@@ -67,164 +67,164 @@ model Experience {
 }
 
 model Certificate {
-  id            Int      @id @default(autoincrement())
-  name          String
-  organization  String
-  url           String
-  image         String
-  verifiedDate  DateTime
-  employee      Employee @relation(fields: [employeeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  employeeId    Int
+  id           Int      @id @default(autoincrement())
+  name         String
+  organization String
+  url          String
+  image        String
+  verifiedDate DateTime
+  employee     Employee @relation(fields: [employeeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  employeeId   Int
 }
 
-
 model Employer {
-  id                    Int             @id @default(autoincrement())
-  email                 String          @unique
-  name                  String
-  gender                String?
-  age                   Int?
-  avatar                String?
-  password              String
-  refreshToken          String?
-  provider              String          @default("credentials") 
-  emailVerified         Boolean         @default(false)
-  hiringDate            DateTime?
-  department            String 
-  position              String
-  company               Company?        @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  companyId             Int?
-  recruitmentPosts      RecruitmentPost[]
+  id               Int               @id @default(autoincrement())
+  email            String            @unique
+  name             String
+  gender           String?
+  age              Int?
+  avatar           String?
+  password         String
+  refreshToken     String?
+  provider         String            @default("credentials")
+  emailVerified    Boolean           @default(false)
+  hiringDate       DateTime?
+  department       String
+  position         String
+  company          Company?          @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  companyId        Int?
+  recruitmentPosts RecruitmentPost[]
 
-  deletedAt       DateTime?
-  deleted         Boolean         @default(false)
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @default(now()) @updatedAt
+  deletedAt DateTime?
+  deleted   Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
 }
 
 model Company {
-  id              Int        @id @default(autoincrement())
-  name            String
-  description     String
-  url             String  
-  industry        String
-  size            String
-  address         String
-  employers       Employer[]
-  logo            String?
-  cover           String?
-  domains         DomainOnCompany[]
+  id          Int               @id @default(autoincrement())
+  name        String
+  description String
+  url         String
+  industry    String
+  size        String
+  address     String
+  employers   Employer[]
+  logo        String?
+  cover       String?
+  domains     DomainOnCompany[]
 }
 
 model Domain {
-  id          Int      @id @default(autoincrement())
+  id          Int               @id @default(autoincrement())
   name        String
   description String?
   company     DomainOnCompany[]
 }
 
 model DomainOnCompany {
-  domainId    Int
-  domain      Domain @relation(fields: [domainId], references: [id])
-  companyId   Int
-  company     Company @relation(fields: [companyId], references: [id])
+  domainId  Int
+  domain    Domain  @relation(fields: [domainId], references: [id])
+  companyId Int
+  company   Company @relation(fields: [companyId], references: [id])
 
   @@id([domainId, companyId]) // Composite primary key
 }
 
 model Evaluation {
-  id                   Int             @id @default(autoincrement())
-  rating               Float
-  saved                Boolean         @default(false)
-  employee             Employee        @relation(fields: [employeeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  employeeId           Int
-  recruitmentPost      RecruitmentPost  @relation(fields: [recruitmentPostId], references: [id])
-  recruitmentPostId    Int
+  id                Int             @id @default(autoincrement())
+  rating            Float
+  saved             Boolean         @default(false)
+  employee          Employee        @relation(fields: [employeeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  employeeId        Int
+  recruitmentPost   RecruitmentPost @relation(fields: [recruitmentPostId], references: [id])
+  recruitmentPostId Int
 }
 
 model Record {
-  id                  Int             @id @default(autoincrement())
-  title               String
-  description         String
-  owner               Employee        @relation(fields: [ownerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  ownerId             Int
-  historyStatuses     HistoryStatus[]
-  recruitmentPostId   Int
-  recruitmentPost     RecruitmentPost  @relation(fields: [recruitmentPostId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  fileCv              File            @relation(fields: [fileCvId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  fileCvId            Int
+  id                Int             @id @default(autoincrement())
+  title             String
+  description       String
+  owner             Employee        @relation(fields: [ownerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ownerId           Int
+  historyStatuses   HistoryStatus[]
+  recruitmentPostId Int
+  recruitmentPost   RecruitmentPost @relation(fields: [recruitmentPostId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  fileCv            File            @relation(fields: [fileCvId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  fileCvId          Int
 }
 
 model File {
-  id         Int       @id @default(autoincrement())
-  name       String    @default("Untitled")
+  id         Int      @id @default(autoincrement())
+  name       String   @default("Untitled")
   folderType String
   mimeType   String?
   size       Int?
   url        String
   record     Record[]
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @default(now()) @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
 }
 
 model HistoryStatus {
-  id          Int      @id @default(autoincrement())
-  status      String
-  updatedAt   DateTime @default(now())
-  email       String
-  record      Record   @relation(fields: [recordId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  recordId    Int
+  id        Int      @id @default(autoincrement())
+  status    String
+  updatedAt DateTime @default(now())
+  email     String
+  record    Record   @relation(fields: [recordId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  recordId  Int
 }
 
 model RecruitmentPost {
-  id              Int          @id @default(autoincrement())
-  title           String       // Tuyen dung vi tri gi
-  description     String       // Mo ta cong viec
-  jobDescription  JobDescription?
-  evaluations     Evaluation[]
-  records         Record[]
-  employer        Employer     @relation(fields: [employerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  employerId      Int
-  category        JobCategoryOnJobPost[]
-  datePosted      DateTime
-  deadline        DateTime
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @default(now()) @updatedAt
+  id             Int                    @id @default(autoincrement())
+  title          String // Tuyen dung vi tri gi
+  description    String // Mo ta cong viec
+  jobDescription JobDescription?
+  evaluations    Evaluation[]
+  records        Record[]
+  employer       Employer               @relation(fields: [employerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  employerId     Int
+  category       JobCategoryOnJobPost[]
+  datePosted     DateTime
+  deadline       DateTime
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @default(now()) @updatedAt
 }
 
 model JobDescription {
-  id                    Int                 @id @default(autoincrement())
-  location              String              // Dia diem lam viec
-  level                 String              @default("staff")// Junior, Senior, Intern
-  experience            String              // 1 year, 2 years, 3 years, 4 years, 5 years
-  salary                String              // Luong
-  quantity              Int                 @default(1) // So luong tuyen dung
-  employmentType        String              // Full-time, Part-time, Remote
-  gender                String              @default("Not required")// yeu cau gioi tinh
-  recruitmentPost       RecruitmentPost     @relation(fields: [recruitmentPostId], references: [id])
-  recruitmentPostId     Int                 @unique
+  id                Int             @id @default(autoincrement())
+  location          String // Dia diem lam viec
+  level             String          @default("staff") // Junior, Senior, Intern
+  experience        String // 1 year, 2 years, 3 years, 4 years, 5 years
+  salary            String // Luong
+  quantity          Int             @default(1) // So luong tuyen dung
+  employmentType    String // Full-time, Part-time, Remote
+  gender            String          @default("Not required") // yeu cau gioi tinh
+  recruitmentPost   RecruitmentPost @relation(fields: [recruitmentPostId], references: [id])
+  recruitmentPostId Int             @unique
 }
 
 model JobCategoryOnJobPost {
-  jobPostId       Int
-  jobPost         RecruitmentPost @relation(fields: [jobPostId], references: [id])
-  categoryId      String
-  category        JobCategory @relation(fields: [categoryId], references: [name])
+  jobPostId  Int
+  jobPost    RecruitmentPost @relation(fields: [jobPostId], references: [id])
+  categoryId String
+  category   JobCategory     @relation(fields: [categoryId], references: [name])
 
   @@id([jobPostId, categoryId]) // Composite primary key
 }
 
 model JobCategory {
-  name        String            @id
-  job         String
-  jobPosts    JobCategoryOnJobPost[]
-  positions   Position[]
+  name      String                 @id
+  job       String
+  jobPosts  JobCategoryOnJobPost[]
+  positions Position[]
 }
 
 model Position {
-  JobCategoryId   String
-  JobCategory     JobCategory @relation(fields: [JobCategoryId], references: [name])
-  name            String
+  JobCategoryId String
+  JobCategory   JobCategory @relation(fields: [JobCategoryId], references: [name])
+  name          String
+
   @@id([JobCategoryId, name]) // Composite primary key
 }
 
@@ -248,7 +248,7 @@ model Admin {
   activityLogs     ActivityLog[]
 
   // Self-referencing relation for superAdmin
-  superAdminId     Int?
-  superAdmin       Admin?        @relation("AdminSuperAdmin", fields: [superAdminId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  subAdmins        Admin[]       @relation("AdminSuperAdmin")
+  superAdminId Int?
+  superAdmin   Admin?  @relation("AdminSuperAdmin", fields: [superAdminId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  subAdmins    Admin[] @relation("AdminSuperAdmin")
 }
