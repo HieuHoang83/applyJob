@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { EducationsService } from './educations.service';
 import { CreateEducationDto } from './dto/create-education.dto';
 import { UpdateEducationDto } from './dto/update-education.dto';
@@ -23,24 +33,24 @@ export class EducationsController {
     return this.educationsService.findAll();
   }
 
-  @Get(':id')
-  @UseGuards(CheckValidId)
-  @ResponseMessage('Get a education successfully!')
-  findOne(@Param('id') id: string) {
-    return this.educationsService.findOne(+id);
-  }
+  // @Get(':id')
+  // @UseGuards(CheckValidId)
+  // @ResponseMessage('Get a education successfully!')
+  // findOne(@Param('id') id: string) {
+  //   return this.educationsService.findOne(+id);
+  // }
 
-  @Patch(':id')
-  @UseGuards(CheckValidId)
-  @ResponseMessage('Update a education successfully!')
-  update(@Param('id') id: string, @Body() updateEducationDto: UpdateEducationDto) {
-    return this.educationsService.update(+id, updateEducationDto);
-  }
+  // @Patch(':id')
+  // @UseGuards(CheckValidId)
+  // @ResponseMessage('Update a education successfully!')
+  // update(@Param('id') id: string, @Body() updateEducationDto: UpdateEducationDto) {
+  //   return this.educationsService.update(+id, updateEducationDto);
+  // }
 
-  @Delete(':id')
-  @UseGuards(CheckValidId)
-  @ResponseMessage('Delete a education successfully!')
-  remove(@Param('id') id: string) {
-    return this.educationsService.remove(+id);
-  }
+  // @Delete(':id')
+  // @UseGuards(CheckValidId)
+  // @ResponseMessage('Delete a education successfully!')
+  // remove(@Param('id') id: string) {
+  //   return this.educationsService.remove(+id);
+  // }
 }

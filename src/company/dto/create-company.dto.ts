@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsArray, IsNotEmpty, IsNumber } from 'class-validator';
 export class CreateCompanyDto {
   @IsNotEmpty()
   name: string;
@@ -8,7 +8,7 @@ export class CreateCompanyDto {
 
   @IsNotEmpty()
   description: string;
-  
+
   @IsNotEmpty()
   industry: string;
 
@@ -18,5 +18,9 @@ export class CreateCompanyDto {
   @IsNotEmpty()
   address: string;
 
-  logoId: number
+  @IsNumber()
+  logoId: number;
+
+  @IsArray()
+  domains: number[];
 }

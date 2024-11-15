@@ -16,28 +16,28 @@ export class EducationsService {
     return await this.prismaService.education.findMany();
   }
 
-  async findOne(id: number) {
-    return await this.prismaService.education.findUnique({
-      where: {
-        id,
-      },
-    });
-  }
+  // async findOne(id: number) {
+  //   return await this.prismaService.education.findUnique({
+  //     where: {
+  //       id,
+  //     },
+  //   });
+  // }
 
-  async update(id: number, updateEducationDto: UpdateEducationDto) {
-    return await this.prismaService.education.update({
-      where: {
-        id,
-      },
-      data: updateEducationDto,
-    });
-  }
+  // async update(id: number, updateEducationDto: UpdateEducationDto) {
+  //   return await this.prismaService.education.update({
+  //     where: {
+  //       id,
+  //     },
+  //     data: updateEducationDto,
+  //   });
+  // }
 
-  async remove(id: number) {
-    return await this.prismaService.education.delete({
-      where: {
-        id,
-      },
-    });
-  }
+  // async remove(id: number) {
+  //   return await this.prismaService.education.delete({
+  //     where: {
+  //       id,
+  //     },
+  //   });
+  // }
 }

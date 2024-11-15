@@ -8,8 +8,8 @@
 // npx prisma generate sau khi thay doi schema
 // npx prisma studio
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["typedSql"]
+  provider = "prisma-client-js"
+  // previewFeatures = ["typedSql"] this features not support for sql-server
 }
 
 datasource db {
@@ -27,6 +27,8 @@ model Employee {
   age           Int?
   avatar        String?
   password      String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @default(now()) @updatedAt
   refreshToken  String?
   provider      String        @default("credentials")
   emailVerified Boolean       @default(false)
@@ -35,15 +37,11 @@ model Employee {
   educations    Education[]
   experiences   Experience[]
   certificates  Certificate[]
-
-  deletedAt DateTime?
-  deleted   Boolean   @default(false)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now()) @updatedAt
+  isBanned      Boolean       @default(false)
 }
 
 model Education {
-  id          Int      @id @default(autoincrement())
+  id          Int      @default(autoincrement())
   school      String
   major       String
   description String?
@@ -51,10 +49,13 @@ model Education {
   endDate     DateTime
   employee    Employee @relation(fields: [employeeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   employeeId  Int
+
+  @@id([id, employeeId]) // Composite primary key
 }
 
 model Experience {
-  id          Int      @id @default(autoincrement())
+  id          Int      @default(autoincrement())
+  employeeId  Int
   company     String
   position    String
   description String?
@@ -63,11 +64,12 @@ model Experience {
   startDate   DateTime
   endDate     DateTime
   employee    Employee @relation(fields: [employeeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  employeeId  Int
+
+  @@id([id, employeeId]) // Composite primary key
 }
 
 model Certificate {
-  id           Int      @id @default(autoincrement())
+  id           Int      @default(autoincrement())
   name         String
   organization String
   url          String
@@ -75,6 +77,8 @@ model Certificate {
   verifiedDate DateTime
   employee     Employee @relation(fields: [employeeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   employeeId   Int
+
+  @@id([id, employeeId]) // Composite primary key
 }
 
 model Employer {
@@ -94,11 +98,7 @@ model Employer {
   company          Company?          @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   companyId        Int?
   recruitmentPosts RecruitmentPost[]
-
-  deletedAt DateTime?
-  deleted   Boolean   @default(false)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now()) @updatedAt
+  isBanned         Boolean           @default(false)
 }
 
 model Company {
@@ -142,16 +142,14 @@ model Evaluation {
 }
 
 model Record {
-  id                Int             @id @default(autoincrement())
-  title             String
-  description       String
-  owner             Employee        @relation(fields: [ownerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  ownerId           Int
-  historyStatuses   HistoryStatus[]
-  recruitmentPostId Int
-  recruitmentPost   RecruitmentPost @relation(fields: [recruitmentPostId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  fileCv            File            @relation(fields: [fileCvId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  fileCvId          Int
+  id              Int                       @id @default(autoincrement())
+  title           String
+  description     String
+  owner           Employee                  @relation(fields: [ownerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ownerId         Int
+  recruitmentPost RecordOnRecruitmentPost[]
+  fileCv          File                      @relation(fields: [fileCvId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  fileCvId        Int
 }
 
 model File {
@@ -166,29 +164,50 @@ model File {
   updatedAt  DateTime @default(now()) @updatedAt
 }
 
-model HistoryStatus {
-  id        Int      @id @default(autoincrement())
-  status    String
-  updatedAt DateTime @default(now())
-  email     String
-  record    Record   @relation(fields: [recordId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  recordId  Int
+model RecruitmentPost {
+  id                       Int                       @id @default(autoincrement())
+  title                    String
+  description              String
+  jobDescription           JobDescription?
+  evaluations              Evaluation[]
+  records                  RecordOnRecruitmentPost[]
+  employer                 Employer                  @relation(fields: [employerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  employerId               Int
+  totalSaved               Int                       @default(0)
+  averageRating            Float                     @default(0)
+  datePosted               DateTime
+  deadline                 DateTime
+  createdAt                DateTime                  @default(now())
+  updatedAt                DateTime                  @default(now()) @updatedAt
+  recruitmentPostPositions RecruitmentPostPosition[] // Quan hệ nhiều-nhiều thông qua bảng trung gian
 }
 
-model RecruitmentPost {
-  id             Int                    @id @default(autoincrement())
-  title          String // Tuyen dung vi tri gi
-  description    String // Mo ta cong viec
-  jobDescription JobDescription?
-  evaluations    Evaluation[]
-  records        Record[]
-  employer       Employer               @relation(fields: [employerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  employerId     Int
-  category       JobCategoryOnJobPost[]
-  datePosted     DateTime
-  deadline       DateTime
-  createdAt      DateTime               @default(now())
-  updatedAt      DateTime               @default(now()) @updatedAt
+model Position {
+  id                       Int                       @id @default(autoincrement())
+  name                     String
+  recruitmentPostPositions RecruitmentPostPosition[] // Quan hệ nhiều-nhiều thông qua bảng trung gian
+}
+
+model RecruitmentPostPosition {
+  recruitmentPostId Int
+  positionId        Int
+  recruitmentPost   RecruitmentPost @relation(fields: [recruitmentPostId], references: [id])
+  position          Position        @relation(fields: [positionId], references: [id])
+
+  @@id([recruitmentPostId, positionId]) // Khóa chính tổng hợp
+}
+
+model RecordOnRecruitmentPost {
+  recordId          Int
+  record            Record          @relation(fields: [recordId], references: [id])
+  recruitmentPostId Int
+  recruitmentPost   RecruitmentPost @relation(fields: [recruitmentPostId], references: [id])
+  job               String
+  status            String
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @default(now()) @updatedAt
+
+  @@id([recordId, recruitmentPostId]) // Composite primary key
 }
 
 model JobDescription {
@@ -202,30 +221,6 @@ model JobDescription {
   gender            String          @default("Not required") // yeu cau gioi tinh
   recruitmentPost   RecruitmentPost @relation(fields: [recruitmentPostId], references: [id])
   recruitmentPostId Int             @unique
-}
-
-model JobCategoryOnJobPost {
-  jobPostId  Int
-  jobPost    RecruitmentPost @relation(fields: [jobPostId], references: [id])
-  categoryId String
-  category   JobCategory     @relation(fields: [categoryId], references: [name])
-
-  @@id([jobPostId, categoryId]) // Composite primary key
-}
-
-model JobCategory {
-  name      String                 @id
-  job       String
-  jobPosts  JobCategoryOnJobPost[]
-  positions Position[]
-}
-
-model Position {
-  JobCategoryId String
-  JobCategory   JobCategory @relation(fields: [JobCategoryId], references: [name])
-  name          String
-
-  @@id([JobCategoryId, name]) // Composite primary key
 }
 
 model ActivityLog {
@@ -246,9 +241,24 @@ model Admin {
   password         String
   verificationCode String?
   activityLogs     ActivityLog[]
-
+  isBanned         Boolean       @default(false)
   // Self-referencing relation for superAdmin
-  superAdminId Int?
-  superAdmin   Admin?  @relation("AdminSuperAdmin", fields: [superAdminId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  subAdmins    Admin[] @relation("AdminSuperAdmin")
+  superAdminId     Int?
+  superAdmin       Admin?        @relation("AdminSuperAdmin", fields: [superAdminId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  subAdmins        Admin[]       @relation("AdminSuperAdmin")
+}
+
+// npx prisma migrate dev --name add_employee_audit_log
+model EmployeeAuditLog {
+  id                 Int      @id @default(autoincrement())
+  action             String   @db.VarChar(10)
+  employeeId         Int?
+  field              String?  @db.NVarChar(100)
+  oldValue           String?  @db.NVarChar(MAX)
+  newValue           String?  @db.NVarChar(MAX)
+  modifiedBy         String   @db.NVarChar(100)
+  modifiedAt         DateTime
+  ipAddress          String   @db.VarChar(45)
+  suspiciousActivity Boolean  @default(false)
+  suspiciousReason   String?  @db.NVarChar(MAX)
 }

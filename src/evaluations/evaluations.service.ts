@@ -6,26 +6,32 @@ import { PaginateInfo } from 'src/interface/paginate.interface';
 
 @Injectable()
 export class EvaluationsService {
-  constructor(
-    private readonly prismaService: PrismaService,
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
   async create(createEvaluationDto: CreateEvaluationDto) {
     return await this.prismaService.evaluation.create({
       data: {
-        ... createEvaluationDto
+        ...createEvaluationDto,
       },
     });
   }
 
   async findAll(paginateInfo: PaginateInfo) {
-    const { offset, defaultLimit, sort, projection, population, filter, currentPage } = paginateInfo;
-  
+    const {
+      offset,
+      defaultLimit,
+      sort,
+      projection,
+      population,
+      filter,
+      currentPage,
+    } = paginateInfo;
+
     // Get total items count
     const totalItems = await this.prismaService.evaluation.count({
       where: filter,
     });
     const totalPages = Math.ceil(totalItems / defaultLimit);
-  
+
     // Retrieve data with Prisma
     const data = await this.prismaService.evaluation.findMany({
       where: filter,
@@ -35,7 +41,7 @@ export class EvaluationsService {
       // select: projection,
       // include: population,
     });
-  
+
     return {
       meta: {
         totalEvaluations: totalItems,
@@ -44,34 +50,34 @@ export class EvaluationsService {
         totalPages,
         currentPage,
       },
-      result: data
+      result: data,
     };
   }
 
   async findOne(id: number) {
     return await this.prismaService.evaluation.findUnique({
       where: {
-        id
-      }
+        id,
+      },
     });
   }
 
   async update(id: number, updateEvaluationDto: UpdateEvaluationDto) {
     return await this.prismaService.evaluation.update({
       where: {
-        id
+        id,
       },
       data: {
-        ...updateEvaluationDto
-      }
+        ...updateEvaluationDto,
+      },
     });
   }
 
   async remove(id: number) {
     return await this.prismaService.evaluation.delete({
       where: {
-        id
-      }
+        id,
+      },
     });
   }
 }

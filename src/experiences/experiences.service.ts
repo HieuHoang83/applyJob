@@ -16,28 +16,28 @@ export class ExperiencesService {
     return await this.prismaService.experience.findMany();
   }
 
-  async findOne(id: number) {
-    return await this.prismaService.experience.findUnique({
-      where: {
-        id,
-      },
-    });
-  }
+  // async findOne(id: number) {
+  //   return await this.prismaService.experience.findUnique({
+  //     where: {
+  //       id,
+  //     },
+  //   });
+  // }
 
-  async update(id: number, updateExperienceDto: UpdateExperienceDto) {
-    return await this.prismaService.experience.update({
-      where: {
-        id,
-      },
-      data: updateExperienceDto,
-    });
-  }
+  // async update(id: number, updateExperienceDto: UpdateExperienceDto) {
+  //   return await this.prismaService.experience.update({
+  //     where: {
+  //       id,
+  //     },
+  //     data: updateExperienceDto,
+  //   });
+  // }
 
-  async remove(id: number) {
-    return await this.prismaService.experience.delete({
-      where: {
-        id,
-      },
-    });
-  }
+  // async remove(id: number) {
+  //   return await this.prismaService.experience.delete({
+  //     where: {
+  //       id,
+  //     },
+  //   });
+  // }
 }

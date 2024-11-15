@@ -22,48 +22,46 @@ import { UserLoginDto } from './dto/login-user.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  // @Public()
-  // @ApiBody({ type: UserLoginDto })
-  // @UseGuards(LocalAuthGuard)
-  // @ResponseMessage("Login success")
-  // @Post('login')
-  // handleLogin(
-  //   @User() user : IUser,
-  //   @Res({ passthrough: true }) response : Response
-  // ) {
-  //   return this.authService.login(user, response);
-  // }
+  @Public()
+  @ResponseMessage('Login success')
+  @Post('login')
+  handleLogin(
+    @Body() userLoginDto: UserLoginDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    return this.authService.login(userLoginDto, response);
+  }
 
   // @Get('account')
-  // @ResponseMessage("Get profile success")
-  // getProfile(@User() user : IUser) {
+  // @ResponseMessage('Get profile success')
+  // getProfile(@User() user: IUser) {
   //   return user;
   // }
 
   // @Public()
   // @UseGuards(UniqueGmail)
   // @Post('register')
-  // @ResponseMessage("Register success")
-  // handleRegister(@Body() regiterDto : RegisterDto) {
+  // @ResponseMessage('Register success')
+  // handleRegister(@Body() regiterDto: RegisterDto) {
   //   return this.authService.register(regiterDto);
   // }
 
   // @Public()
   // @Get('refresh')
-  // @ResponseMessage("Get profile by refresh token")
+  // @ResponseMessage('Get profile by refresh token')
   // hanldeRefreshToken(
-  //   @Req() request : Request,
-  //   @Res({ passthrough: true }) response : Response
+  //   @Req() request: Request,
+  //   @Res({ passthrough: true }) response: Response,
   // ) {
-  //   return this.authService.processNewToken(request, response)
+  //   return this.authService.processNewToken(request, response);
   // }
 
   // @Get('logout')
-  // @ResponseMessage("Log out success")
+  // @ResponseMessage('Log out success')
   // handleLogout(
-  //   @User() user : IUser,
-  //   @Res({ passthrough: true }) response : Response
+  //   @User() user: IUser,
+  //   @Res({ passthrough: true }) response: Response,
   // ) {
-  //   return this.authService.logout(user, response)
+  //   return this.authService.logout(user, response);
   // }
 }

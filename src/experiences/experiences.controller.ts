@@ -30,27 +30,27 @@ export class ExperiencesController {
     return this.experiencesService.findAll();
   }
 
-  @Get(':id')
-  @ResponseMessage('Get a experience successfully!')
-  @UseGuards(CheckValidId)
-  findOne(@Param('id') id: string) {
-    return this.experiencesService.findOne(+id);
-  }
+  // @Get(':id')
+  // @ResponseMessage('Get a experience successfully!')
+  // @UseGuards(CheckValidId)
+  // findOne(@Param('id') id: string) {
+  //   return this.experiencesService.findOne(+id);
+  // }
 
-  @Patch(':id')
-  @ResponseMessage('Update a experience successfully!')
-  @UseGuards(CheckValidId)
-  update(
-    @Param('id') id: string,
-    @Body() updateExperienceDto: UpdateExperienceDto,
-  ) {
-    return this.experiencesService.update(+id, updateExperienceDto);
-  }
+  // @Patch(':id')
+  // @ResponseMessage('Update a experience successfully!')
+  // @UseGuards(CheckValidId)
+  // update(
+  //   @Param('id') id: string,
+  //   @Body() updateExperienceDto: UpdateExperienceDto,
+  // ) {
+  //   return this.experiencesService.update(+id, updateExperienceDto);
+  // }
 
-  @Delete(':id')
-  @ResponseMessage('Delete a experience successfully!')
-  @UseGuards(CheckValidId)
-  remove(@Param('id') id: string) {
-    return this.experiencesService.remove(+id);
-  }
+  // @Delete(':id')
+  // @ResponseMessage('Delete a experience successfully!')
+  // @UseGuards(CheckValidId)
+  // remove(@Param('id') id: string) {
+  //   return this.experiencesService.remove(+id);
+  // }
 }

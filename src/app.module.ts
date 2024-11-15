@@ -5,7 +5,7 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './auth/auth.module';
-import { RecruitmentPostModule } from './recruitment-post/recruitment-post.module';
+
 import { CompanyModule } from './company/company.module';
 import { RecordsModule } from './records/records.module';
 import { FilesModule } from './files/files.module';
@@ -17,6 +17,8 @@ import { EmployeesModule } from './employees/employees.module';
 import { EmployersModule } from './employers/employers.module';
 import { AdminsModule } from './admins/admins.module';
 import { DomainsModule } from './domains/domains.module';
+import { DomainAndCompanyModule } from './domain-and-company/domain-and-company.module';
+import { RecruitmentPostModule } from './recruitment-post/recruitment-post.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -31,7 +33,7 @@ import { DomainsModule } from './domains/domains.module';
     ]),
     // UsersModule,
     AuthModule,
-    RecruitmentPostModule,
+
     CompanyModule,
     RecordsModule,
     FilesModule,
@@ -42,7 +44,9 @@ import { DomainsModule } from './domains/domains.module';
     EmployeesModule,
     EmployersModule,
     AdminsModule,
-    DomainsModule
+    DomainsModule,
+    DomainAndCompanyModule,
+    RecruitmentPostModule,
   ],
   controllers: [AppController],
   providers: [AppService],

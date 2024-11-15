@@ -1,107 +1,54 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateRecruitmentPostDto } from './dto/create-recruitment-post.dto';
 import { UpdateRecruitmentPostDto } from './dto/update-recruitment-post.dto';
 import { PrismaService } from 'prisma/prisma.service';
-import { IUser } from 'src/interface/users.interface';
-import { PaginateInfo } from 'src/interface/paginate.interface';
 
 @Injectable()
 export class RecruitmentPostService {
   constructor(private prismaService: PrismaService) {}
-  // create(createRecruitmentPostDto: CreateRecruitmentPostDto, user: IUser) {
-  //   return this.prismaService.recruitmentPost.create({
-  //     data: {
-  //       ...createRecruitmentPostDto,
-  //       employerId: user.id,
-  //     }
-  //   });
-  // }
+  async create(data: CreateRecruitmentPostDto) {
+    const recruitmentPost = await this.prismaService.$queryRaw`
+      INSERT INTO RecruitmentPost (title, description, employerId, datePosted, deadline,createdAt, updatedAt)
+      VALUES (${data.title}, ${data.description}, ${data.employerId}, ${
+      data.datePosted
+    }, ${data.deadline},${Date.now()},${Date.now()})
+      RETURNING *;
+    `;
 
-  // async findAll(
-  //   info: PaginateInfo
-  // ) {
-  //   const {
-  //     offset,
-  //     defaultLimit,
-  //     sort,
-  //     projection,
-  //     population,
-  //     filter,
-  //     currentPage,
-  //   } = info;
+    // if (data.positionIds && data.positionIds.length > 0) {
+    //   for (const positionId of data.positionIds) {
+    //     await this.prismaService.$queryRaw`
+    //       INSERT INTO RecruitmentPostPosition (recruitmentPostId, positionId)
+    //       VALUES (${recruitmentPost.id}, ${positionId});
+    //     `;
+    //   }
+    // }
 
-  //   // Get total items count
-  //   const totalItems = await this.prismaService.recruitmentPost.count({
-  //     where: filter,
-  //   });
-  //   const totalPages = Math.ceil(totalItems / defaultLimit);
+    return recruitmentPost;
+  }
 
-  //   // Retrieve data with Prisma
-  //   const data = await this.prismaService.recruitmentPost.findMany({
-  //     where: filter,
-  //     skip: offset,
-  //     take: defaultLimit,
-  //     // orderBy: sort,
-  //     // select: projection,
-  //     // include: population,
-  //     include: {
-  //       employer: {
-  //         include: {
-  //           company:{
-  //             select: {
-  //               logo: true,
-  //               name: true
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //   });
+  async findAll() {
+    const recruitmentPost = await this.prismaService.$queryRaw`
+    SELECT * FROM RecruitmentPost ;
+  `;
+    return recruitmentPost;
+  }
 
-  //   return {
-  //     meta: {
-  //       totalJobPosts: totalItems,
-  //       jobPostCount: data.length,
-  //       jobPostsPerPage: defaultLimit,
-  //       totalPages,
-  //       currentPage,
-  //     },
-  //     result: data,
-  //   };
-  // }
+  async findOne(id: number) {
+    const recruitmentPost = await this.prismaService.$queryRaw`
+    SELECT * FROM RecruitmentPost WHERE id = ${id};
+  `;
+    return recruitmentPost;
+  }
 
-  // async findOne(id: number) {
-  //   return await this.prismaService.recruitmentPost.findFirst({
-  //     where: {
-  //       id,
-  //     },
-  //   });
-  // }
+  update(id: number, updateRecruitmentPostDto: UpdateRecruitmentPostDto) {
+    return `This action updates a #${id} recruitmentPost`;
+  }
 
-  // async update(id: number, updateRecruitmentPostDto: UpdateRecruitmentPostDto) {
-  //   const res = await this.findOne(id);
-  //   if (!res) {
-  //     throw new HttpException('Bài Đăng k tìm thấy', HttpStatus.NOT_FOUND);
-  //   }
-  //   return this.prismaService.user.update({
-  //     where: {
-  //       id,
-  //     },
-  //     data: {
-  //       ...updateRecruitmentPostDto,
-  //     },
-  //   });
-  // }
-
-  // async remove(id: number) {
-  //   const res = await this.findOne(id);
-  //   if (!res) {
-  //     throw new HttpException('Bài Đăng k tìm thấy', HttpStatus.NOT_FOUND);
-  //   }
-  //   return this.prismaService.user.delete({
-  //     where: {
-  //       id,
-  //     },
-  //   });
-  // }
+  async remove(id: number) {
+    await this.prismaService.$queryRaw`
+    DELETE FROM RecruitmentPostPosition WHERE recruitmentPostId = ${id}`;
+    const deletedPost = await this.prismaService.$queryRaw`
+    DELETE FROM RecruitmentPost WHERE id = ${id} RETURNING * `;
+  }
 }

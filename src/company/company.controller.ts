@@ -1,8 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
-import { GetPaginateInfo, Public, ResponseMessage } from 'src/decorators/customize';
+import {
+  GetPaginateInfo,
+  Public,
+  ResponseMessage,
+} from 'src/decorators/customize';
 import { ApiTags } from '@nestjs/swagger';
 import { CheckValidId } from 'src/core/id.guard';
 import { PaginateInfo } from 'src/interface/paginate.interface';
@@ -18,16 +31,15 @@ export class CompanyController {
   @Post()
   @ResponseMessage('Create a new Company')
   create(@Body() createCompanyDto: CreateCompanyDto) {
+    return createCompanyDto;
     return this.companyService.create(createCompanyDto);
   }
 
   @Public()
   @Get()
   @ResponseMessage('Get all Companies')
-  findAll(
-    @GetPaginateInfo() paginateInfo: PaginateInfo
-  ) {
-    return this.companyService.findAll(paginateInfo);
+  findAll() {
+    return this.companyService.findAll();
   }
 
   @Public()

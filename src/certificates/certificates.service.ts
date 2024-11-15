@@ -52,22 +52,22 @@ export class CertificatesService {
     };
   }
 
-  async findOne(id: number) {
-    return await this.prismaService.certificate.findUnique({
-      where: { id },
-    });
-  }
+  // async findOne(id: number) {
+  //   return await this.prismaService.certificate.findUnique({
+  //     where: { id },
+  //   });
+  // }
 
-  async update(id: number, updateCertificateDto: UpdateCertificateDto) {
-    return await this.prismaService.certificate.update({
-      where: { id },
-      data: updateCertificateDto,
-    });
-  }
+  // async update(id: number, updateCertificateDto: UpdateCertificateDto) {
+  //   return await this.prismaService.certificate.update({
+  //     where: { id },
+  //     data: updateCertificateDto,
+  //   });
+  // }
 
-  async remove(id: number) {
-    return await this.prismaService.certificate.delete({
-      where: { id },
-    });
-  }
+  // async remove(id: number) {
+  //   return await this.prismaService.certificate.delete({
+  //     where: { id },
+  //   });
+  // }
 }

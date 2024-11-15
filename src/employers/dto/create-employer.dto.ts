@@ -7,59 +7,56 @@ import {
   IsDate,
   IsNotEmpty,
   IsEnum,
+  Min,
 } from 'class-validator';
 import { Gender } from 'utils/constant';
 
 export class CreateEmployerDto {
-  @IsNotEmpty()
   @IsEmail()
   email: string;
 
-  @IsNotEmpty()
   @IsString()
   name: string;
 
   @IsOptional()
-  @IsEnum(Gender)
-  gender: string;
+  @IsString()
+  gender?: string;
 
   @IsOptional()
   @IsInt()
-  age: number;
+  @Min(18)
+  age?: number;
 
   @IsOptional()
   @IsString()
-  avatar: string;
+  avatar?: string;
 
-  @IsNotEmpty()
   @IsString()
   password: string;
 
   @IsOptional()
   @IsString()
-  refreshToken: string;
-
-  @IsOptional()
-  @IsString()
-  provider: string;
+  provider?: string = 'credentials';
 
   @IsOptional()
   @IsBoolean()
-  emailVerified: boolean;
+  emailVerified?: boolean = false;
 
   @IsOptional()
   @IsDate()
-  hiringDate: Date;
+  hiringDate?: Date;
 
   @IsString()
-  @IsNotEmpty()
   department: string;
 
   @IsString()
-  @IsNotEmpty()
   position: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsInt()
-  companyId: number;
+  companyId?: number;
+
+  @IsOptional()
+  @IsBoolean()
+  isBanned?: boolean = false;
 }

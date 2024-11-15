@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { CertificatesService } from './certificates.service';
 import { CreateCertificateDto } from './dto/create-certificate.dto';
 import { UpdateCertificateDto } from './dto/update-certificate.dto';
@@ -24,24 +33,24 @@ export class CertificatesController {
     return this.certificatesService.findAll(paginateInfo);
   }
 
-  @Get(':id')
-  @UseGuards(CheckValidId)
-  @ResponseMessage('Certificate found successfully')
-  findOne(@Param('id') id: string) {
-    return this.certificatesService.findOne(+id);
-  }
+  // @Get(':id')
+  // @UseGuards(CheckValidId)
+  // @ResponseMessage('Certificate found successfully')
+  // findOne(@Param('id') id: string) {
+  //   return this.certificatesService.findOne(+id);
+  // }
 
-  @Patch(':id')
-  @UseGuards(CheckValidId)
-  @ResponseMessage('Certificate updated successfully')
-  update(@Param('id') id: string, @Body() updateCertificateDto: UpdateCertificateDto) {
-    return this.certificatesService.update(+id, updateCertificateDto);
-  }
+  // @Patch(':id')
+  // @UseGuards(CheckValidId)
+  // @ResponseMessage('Certificate updated successfully')
+  // update(@Param('id') id: string, @Body() updateCertificateDto: UpdateCertificateDto) {
+  //   return this.certificatesService.update(+id, updateCertificateDto);
+  // }
 
-  @Delete(':id')
-  @UseGuards(CheckValidId)
-  @ResponseMessage('Certificate deleted successfully')
-  remove(@Param('id') id: string) {
-    return this.certificatesService.remove(+id);
-  }
+  // @Delete(':id')
+  // @UseGuards(CheckValidId)
+  // @ResponseMessage('Certificate deleted successfully')
+  // remove(@Param('id') id: string) {
+  //   return this.certificatesService.remove(+id);
+  // }
 }
