@@ -31,7 +31,6 @@ export class CompanyController {
   @Post()
   @ResponseMessage('Create a new Company')
   create(@Body() createCompanyDto: CreateCompanyDto) {
-    return createCompanyDto;
     return this.companyService.create(createCompanyDto);
   }
 

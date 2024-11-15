@@ -19,6 +19,9 @@ import { AdminsModule } from './admins/admins.module';
 import { DomainsModule } from './domains/domains.module';
 import { DomainAndCompanyModule } from './domain-and-company/domain-and-company.module';
 import { RecruitmentPostModule } from './recruitment-post/recruitment-post.module';
+import { PositionModule } from './position/position.module';
+import { RecruitmentPostPositionModule } from './recruitment-post-position/recruitment-post-position.module';
+import { JobDescriptionModule } from './job-description/job-description.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -47,6 +50,9 @@ import { RecruitmentPostModule } from './recruitment-post/recruitment-post.modul
     DomainsModule,
     DomainAndCompanyModule,
     RecruitmentPostModule,
+    PositionModule,
+    RecruitmentPostPositionModule,
+    JobDescriptionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

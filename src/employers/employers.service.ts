@@ -20,12 +20,14 @@ export class EmployersService {
       }
       const result = await this.prismaService.$queryRaw`
           INSERT INTO Employer (email, name, password, department, position, companyId, isBanned)
-          VALUES (${email}, ${name}, ${password}, ${department}, ${position}, ${companyId}, 0)
+          OUTPUT inserted.id, inserted.name
+          VALUES (${email}, ${name}, ${password}, ${department}, ${position}, ${companyId}, 0)  ;
          ;
         `;
 
       return result;
     } catch (error) {
+      console.log(error);
       throw new BadRequestException('Error inserting Employer:');
     }
   }

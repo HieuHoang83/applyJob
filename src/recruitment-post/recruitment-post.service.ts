@@ -41,8 +41,38 @@ export class RecruitmentPostService {
     return recruitmentPost;
   }
 
-  update(id: number, updateRecruitmentPostDto: UpdateRecruitmentPostDto) {
-    return `This action updates a #${id} recruitmentPost`;
+  async update(id: number, data: UpdateRecruitmentPostDto) {
+    // Start with the base query
+    let query = `UPDATE RecruitmentPost SET `;
+    const fieldsToUpdate: string[] = [];
+    const values: any[] = [];
+
+    // Dynamically add fields based on presence in the DTO
+    if (data.title !== undefined) {
+      fieldsToUpdate.push(`title = ?`);
+      values.push(data.title);
+    }
+
+    if (data.description !== undefined) {
+      fieldsToUpdate.push(`description = ?`);
+      values.push(data.description);
+    }
+
+    if (data.deadline !== undefined) {
+      fieldsToUpdate.push(`deadline = ?`);
+      values.push(data.deadline);
+    }
+
+    // Construct the final query by joining dynamic fields
+    query += fieldsToUpdate.join(', ');
+    query += ` WHERE id = ?`;
+    values.push(id);
+
+    // Execute the raw query with the dynamic values
+    await this.prismaService.$queryRawUnsafe(query, ...values);
+
+    // Return the updated recruitment post
+    return this.prismaService.recruitmentPost.findUnique({ where: { id } });
   }
 
   async remove(id: number) {
