@@ -1,4 +1,5 @@
-import { IsOptional, IsString, IsInt, IsBoolean, IsEmail, IsDate, IsArray, IsNotEmpty, IsEnum } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsOptional, IsString, IsInt, IsBoolean, IsEmail, IsDate, IsArray, IsNotEmpty, IsEnum, Min } from 'class-validator';
 import { Gender } from 'utils/constant';
 
 export class CreateEmployeeDto {
@@ -23,6 +24,7 @@ export class CreateEmployeeDto {
   gender: string;
 
   @IsOptional()
+  @Type(() => Number)
   @IsInt()
   age: number;
 
@@ -45,4 +47,20 @@ export class CreateEmployeeDto {
   @IsOptional()
   @IsBoolean()
   emailVerified: boolean;
+}
+
+export class GetEmployeeEducationDto {
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Type(() => Number)
+  minAge?: number;
+
+  @IsOptional()
+  @IsString()
+  gender?: string;
+
+  @IsOptional()
+  @IsString()
+  schoolName?: string;
 }

@@ -16,7 +16,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { UseInterceptors } from '@nestjs/common';
 import { UploadedFile } from '@nestjs/common';
 import { Express } from 'express';
-import { ResponseMessage } from 'src/decorators/customize';
+import { Public, ResponseMessage } from 'src/decorators/customize';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('files')
@@ -25,6 +25,7 @@ export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
   // validate file type and size
+  @Public()
   @Post('upload')
   @ResponseMessage('Upload file successfully!')
   @UseInterceptors(FileInterceptor('file'))
@@ -42,18 +43,12 @@ export class FilesController {
           errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
         }),
     )
-    file: Express.Multer.File,
-    @Headers('folder_type') folder_type: string
+    file: Express.Multer.File
   ) {
-    if (!folder_type) {
-      throw new HttpException(
-        'Folder type is required',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    return this.filesService.uploadFile(file, folder_type);
+    return this.filesService.uploadFile(file);
   }
 
+  @Public()
   @Delete('delete')
   @ResponseMessage('Remove file successfully!')
   remove(

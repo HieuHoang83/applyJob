@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateRecruitmentPostDto } from './dto/create-recruitment-post.dto';
 import { UpdateRecruitmentPostDto } from './dto/update-recruitment-post.dto';
 import { PrismaService } from 'prisma/prisma.service';
@@ -8,23 +8,11 @@ export class RecruitmentPostService {
   constructor(private prismaService: PrismaService) {}
   async create(data: CreateRecruitmentPostDto) {
     const recruitmentPost = await this.prismaService.$queryRaw`
-      INSERT INTO RecruitmentPost (title, description, employerId, datePosted, deadline,createdAt, updatedAt)
-      VALUES (${data.title}, ${data.description}, ${data.employerId}, ${
-      data.datePosted
-    }, ${data.deadline},${Date.now()},${Date.now()})
-      RETURNING *;
+      INSERT INTO RecruitmentPost (title, description, employerId, datePosted, deadline)
+      VALUES (${data.title}, ${data.description}, ${data.employerId}, ${data.datePosted}, ${data.deadline});
     `;
 
-    // if (data.positionIds && data.positionIds.length > 0) {
-    //   for (const positionId of data.positionIds) {
-    //     await this.prismaService.$queryRaw`
-    //       INSERT INTO RecruitmentPostPosition (recruitmentPostId, positionId)
-    //       VALUES (${recruitmentPost.id}, ${positionId});
-    //     `;
-    //   }
-    // }
-
-    return recruitmentPost;
+    return data;
   }
 
   async findAll() {
@@ -43,36 +31,34 @@ export class RecruitmentPostService {
 
   async update(id: number, data: UpdateRecruitmentPostDto) {
     // Start with the base query
-    let query = `UPDATE RecruitmentPost SET `;
-    const fieldsToUpdate: string[] = [];
-    const values: any[] = [];
+    try {
+      const fieldsToUpdate = [];
 
-    // Dynamically add fields based on presence in the DTO
-    if (data.title !== undefined) {
-      fieldsToUpdate.push(`title = ?`);
-      values.push(data.title);
+      if (data.title) {
+        fieldsToUpdate.push(`title = '${data.title}'`);
+      }
+      if (data.description) {
+        fieldsToUpdate.push(`description = '${data.description}'`);
+      }
+
+      if (data.deadline) {
+        fieldsToUpdate.push(`deadline = '${data.deadline}'`);
+      }
+      const date = new Date().toISOString(); // Get current date in ISO format
+      fieldsToUpdate.push(`updatedAt = '${date}'`);
+      const updateQuery = `
+        UPDATE RecruitmentPost
+        SET ${fieldsToUpdate.join(', ')}
+        WHERE id = ${id};
+      `;
+
+      await this.prismaService.$executeRawUnsafe(updateQuery);
+      return { message: `RecruitmentPost with id ${id} updated successfully.` };
+    } catch (error) {
+      throw new BadRequestException(
+        `Failed to update company with id ${id}: ${error.message}`,
+      );
     }
-
-    if (data.description !== undefined) {
-      fieldsToUpdate.push(`description = ?`);
-      values.push(data.description);
-    }
-
-    if (data.deadline !== undefined) {
-      fieldsToUpdate.push(`deadline = ?`);
-      values.push(data.deadline);
-    }
-
-    // Construct the final query by joining dynamic fields
-    query += fieldsToUpdate.join(', ');
-    query += ` WHERE id = ?`;
-    values.push(id);
-
-    // Execute the raw query with the dynamic values
-    await this.prismaService.$queryRawUnsafe(query, ...values);
-
-    // Return the updated recruitment post
-    return this.prismaService.recruitmentPost.findUnique({ where: { id } });
   }
 
   async remove(id: number) {
@@ -80,5 +66,61 @@ export class RecruitmentPostService {
     DELETE FROM RecruitmentPostPosition WHERE recruitmentPostId = ${id}`;
     const deletedPost = await this.prismaService.$queryRaw`
     DELETE FROM RecruitmentPost WHERE id = ${id} RETURNING * `;
+  }
+  async analyzeTrends(industry?: string, minRating: number = 3.0) {
+    try {
+      const result = (await this.prismaService.$queryRaw`
+        SELECT * FROM dbo.AnalyzeRecruitmentTrends(
+          ${industry || null},
+          ${minRating}
+        )
+      `) as any[];
+
+      return result.map((item) => ({
+        industry: item.industry,
+        companyName: item.CompanyName,
+        postId: Number(item.PostId), // Convert BigInt to Number
+        jobTitle: item.JobTitle,
+        salary: item.salary,
+        experience: item.experience,
+        level: item.level,
+        totalApplications: Number(item.TotalApplications), // Convert BigInt to Number
+        averageRating: Number(item.AverageRating.toFixed(2)),
+        industryRank: Number(item.IndustryRank), // Convert BigInt to Number
+        competitionLevel: item.CompetitionLevel,
+        attractivenessLevel: item.AttractivenessLevel,
+      }));
+    } catch (error) {
+      const errorMessage =
+        error.message.match(/Message: `([^`]+)`/)?.[1] || error.message;
+      throw new BadRequestException(errorMessage);
+    }
+  }
+
+  async getRecruitmentStatsByCompany(
+    minRating?: number,
+    minApplications?: number,
+    industry?: string,
+  ) {
+    try {
+      const result = (await this.prismaService.$queryRaw`
+        EXEC [dbo].[sp_GetRecruitmentStatsByCompany]
+          @minRating = ${minRating || null},
+          @minApplications = ${minApplications || null},
+          @industry = ${industry || null}
+      `) as any[];
+
+      return result.map((item) => ({
+        companyName: item.CompanyName,
+        industry: item.industry,
+        totalApplications: Number(item.TotalApplications),
+        averageRating: Number(item.AverageRating.toFixed(2)),
+        totalPosts: Number(item.TotalPosts),
+      }));
+    } catch (error) {
+      const errorMessage =
+        error.message.match(/Message: `([^`]+)`/)?.[1] || error.message;
+      throw new BadRequestException(errorMessage);
+    }
   }
 }

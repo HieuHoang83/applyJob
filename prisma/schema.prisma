@@ -41,20 +41,21 @@ model Employee {
 }
 
 model Education {
-  id          Int      @default(autoincrement())
+  id          Int                 @unique @default(autoincrement())
   school      String
   major       String
   description String?
   startDate   DateTime
   endDate     DateTime
-  employee    Employee @relation(fields: [employeeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  employee    Employee            @relation(fields: [employeeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   employeeId  Int
+  record      EducationOnRecord[]
 
   @@id([id, employeeId]) // Composite primary key
 }
 
 model Experience {
-  id          Int      @default(autoincrement())
+  id          Int                  @unique @default(autoincrement())
   employeeId  Int
   company     String
   position    String
@@ -63,20 +64,22 @@ model Experience {
   image       String?
   startDate   DateTime
   endDate     DateTime
-  employee    Employee @relation(fields: [employeeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  employee    Employee             @relation(fields: [employeeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  record      ExperienceOnRecord[]
 
   @@id([id, employeeId]) // Composite primary key
 }
 
 model Certificate {
-  id           Int      @default(autoincrement())
+  id           Int                   @unique @default(autoincrement())
   name         String
   organization String
   url          String
   image        String
   verifiedDate DateTime
-  employee     Employee @relation(fields: [employeeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  employee     Employee              @relation(fields: [employeeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   employeeId   Int
+  record       CertificateOnRecord[]
 
   @@id([id, employeeId]) // Composite primary key
 }
@@ -99,6 +102,33 @@ model Employer {
   companyId        Int?
   recruitmentPosts RecruitmentPost[]
   isBanned         Boolean           @default(false)
+}
+
+model ExperienceOnRecord {
+  experienceId Int
+  recordId     Int
+  experience   Experience @relation(fields: [experienceId], references: [id])
+  record       Record     @relation(fields: [recordId], references: [id])
+
+  @@id([experienceId, recordId]) // Composite primary key
+}
+
+model EducationOnRecord {
+  educationId Int
+  recordId    Int
+  education   Education @relation(fields: [educationId], references: [id])
+  record      Record    @relation(fields: [recordId], references: [id])
+
+  @@id([educationId, recordId]) // Composite primary key
+}
+
+model CertificateOnRecord {
+  certificateId Int
+  recordId      Int
+  certificate   Certificate @relation(fields: [certificateId], references: [id])
+  record        Record      @relation(fields: [recordId], references: [id])
+
+  @@id([certificateId, recordId]) // Composite primary key
 }
 
 model Company {
@@ -139,6 +169,8 @@ model Evaluation {
   employeeId        Int
   recruitmentPost   RecruitmentPost @relation(fields: [recruitmentPostId], references: [id])
   recruitmentPostId Int
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @default(now()) @updatedAt
 }
 
 model Record {
@@ -150,18 +182,20 @@ model Record {
   recruitmentPost RecordOnRecruitmentPost[]
   fileCv          File                      @relation(fields: [fileCvId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   fileCvId        Int
+  experience      ExperienceOnRecord[]
+  education       EducationOnRecord[]
+  certificate     CertificateOnRecord[]
 }
 
 model File {
-  id         Int      @id @default(autoincrement())
-  name       String   @default("Untitled")
-  folderType String
-  mimeType   String?
-  size       Int?
-  url        String
-  record     Record[]
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
+  id        Int      @id @default(autoincrement())
+  name      String   @default("Untitled")
+  mimeType  String?
+  size      Int?
+  url       String
+  record    Record[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model RecruitmentPost {

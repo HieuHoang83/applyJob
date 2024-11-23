@@ -1,19 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-export class CreateEvaluationDto {
-  @ApiProperty()
-  @IsNotEmpty()
-  rating: number;
 
+export class UpdateRecordOnPostDto {
   @ApiProperty()
   @IsNotEmpty()
-  saved: boolean;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  employeeId: number;
+  recordId: number;
 
   @ApiProperty()
   @IsNotEmpty()
   recruitmentPostId: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  status: string;
 }

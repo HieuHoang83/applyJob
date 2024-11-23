@@ -11,7 +11,6 @@ import { RecordsModule } from './records/records.module';
 import { FilesModule } from './files/files.module';
 import { EvaluationsModule } from './evaluations/evaluations.module';
 import { CertificatesModule } from './certificates/certificates.module';
-import { ExperiencesModule } from './experiences/experiences.module';
 import { EducationsModule } from './educations/educations.module';
 import { EmployeesModule } from './employees/employees.module';
 import { EmployersModule } from './employers/employers.module';
@@ -22,6 +21,7 @@ import { RecruitmentPostModule } from './recruitment-post/recruitment-post.modul
 import { PositionModule } from './position/position.module';
 import { RecruitmentPostPositionModule } from './recruitment-post-position/recruitment-post-position.module';
 import { JobDescriptionModule } from './job-description/job-description.module';
+import { ExperiencesModule } from 'experiences/experiences.module';
 @Module({
   imports: [
     ConfigModule.forRoot({

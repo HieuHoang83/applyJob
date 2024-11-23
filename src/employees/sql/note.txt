@@ -1,0 +1,42 @@
+Trigger này có những tính năng đặc biệt sau:
+1. Ghi lại chi tiết mọi thay đổi:
+    Lưu thông tin người thực hiện
+    Lưu IP address
+    Lưu giá trị cũ và mới (với UPDATE)
+    Mã hóa thông tin nhạy cảm (password)
+2. Phát hiện hoạt động đáng ngờ:
+    Thay đổi email nhiều lần trong 24h
+    Thay đổi password nhiều lần trong 1h
+    Đăng ký nhiều tài khoản từ cùng domain email
+    Phát hiện xóa hàng loạt nhân viên
+3. Thông báo tự động:
+    Raise error khi phát hiện hoạt động đáng ngờ
+    Ghi chi tiết lý do trong log
+4. Bảo mật:
+    Không lưu trữ mật khẩu trong log
+    Theo dõi IP address của người thực hiện
+    Ghi lại thời gian chính xác của mọi thao tác
+5. Dễ dàng truy vết:
+    Có thể xem lại toàn bộ lịch sử thay đổi
+    Biết được ai thực hiện thay đổi
+    Biết được thay đổi gì và khi nào
+Trigger này rất hữu ích cho:
+    Bảo mật hệ thống
+    Audit trail
+    Phát hiện hành vi bất thường
+    Theo dõi thay đổi dữ liệu
+    Phòng chống tấn công
+
+
+
+1. CalculateApplicationSuccess:
+    Tính tỷ lệ thành công trong ứng tuyển của một ứng viên
+    Sử dụng cursor để duyệt qua từng hồ sơ ứng tuyển
+    Phân loại hiệu suất dựa trên tỷ lệ thành công
+    Trả về thống kê chi tiết về quá trình ứng tuyển
+2. AnalyzeRecruitmentTrends:
+    Phân tích xu hướng tuyển dụng theo ngành
+    Tính toán mức độ cạnh tranh dựa trên số lượng ứng tuyển
+    Đánh giá mức độ hấp dẫn của công việc
+    Cho phép lọc theo ngành và rating tối thiểu
+    Sử dụng CTE và Window Functions để tính toán thống kê

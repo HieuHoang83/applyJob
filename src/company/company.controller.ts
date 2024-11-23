@@ -43,24 +43,21 @@ export class CompanyController {
 
   @Public()
   @Get(':id')
-  @UseGuards(CheckValidId)
   @ResponseMessage('Get Company by ID')
   findOne(@Param('id') id: string) {
     return this.companyService.findOne(+id);
   }
 
+  @Public()
   @Patch(':id')
-  @UseGuards(CheckValidId)
-  @UseGuards(new CheckAccessToRoute(Role.EMPLOYER))
   @ResponseMessage('Update Company by ID')
   update(@Param('id') id: string, @Body() updateCompanyDto: UpdateCompanyDto) {
     return this.companyService.update(+id, updateCompanyDto);
   }
 
+  @Public()
   @Delete(':id')
-  @UseGuards(CheckValidId)
   @ResponseMessage('Delete Company by ID')
-  @UseGuards(new CheckAccessToRoute(Role.ADMIN))
   remove(@Param('id') id: string) {
     return this.companyService.remove(+id);
   }

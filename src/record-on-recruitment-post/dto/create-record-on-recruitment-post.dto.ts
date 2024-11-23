@@ -1,20 +1,16 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty } from "class-validator";
 
-export class CreateRecordDto {
+export class CreateRecordOnPostDto {
   @ApiProperty()
   @IsNotEmpty()
-  title: string
+  recordId: number
 
   @ApiProperty()
   @IsNotEmpty()
-  description: string
+  recruitmentPostId: number
 
   @ApiProperty()
   @IsNotEmpty()
-  ownerId: number
-
-  @ApiProperty()
-  @IsNotEmpty()
-  fileCvId: number
+  job: string
 }

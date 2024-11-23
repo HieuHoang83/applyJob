@@ -1,53 +1,151 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateEmployeeDto } from './dto/create-employee.dto';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { CreateEmployeeDto, GetEmployeeEducationDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { PrismaService } from 'prisma/prisma.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class EmployeesService {
-  constructor(private prismaService: PrismaService) {}
-  async create() {
+  constructor(private readonly prismaService: PrismaService) {}
+  
+  async getEmployeeEducation(params: GetEmployeeEducationDto) {
     try {
-      await this.prismaService
-        .$queryRaw`INSERT INTO Admin (email, name, gender, age, avatar, password, verificationCode)
-    VALUES ('example7@example.com', 'John Doe1', 'male', 25, 'avatar_url', 'hashed_password', 'verification_code')`;
-      return this.findOneByEmail('example3@example.com');
+      const result = await this.prismaService.$queryRaw`
+        EXEC dbo.sp_GetEmployeeEducation 
+          @minAge = ${params.minAge || null},
+          @gender = ${params.gender || null},
+          @schoolName = ${params.schoolName || null}
+      `;
+      
+      return result;
     } catch (error) {
-      throw new BadRequestException(error.meta.message);
+      const errorMessage = error.message.match(/Message: `([^`]+)`/)?.[1] || error.message;
+      throw new BadRequestException(errorMessage);
+    }
+  }
+  async getApplicationStats(id: number) {
+    try {
+      const result = await this.prismaService.$queryRaw`
+        SELECT * FROM dbo.CalculateApplicationSuccess(${id})
+      `;
+      
+      const stats = result[0];
+      if (!stats) {
+        throw new NotFoundException('Employee not found or has no applications');
+      }
+
+      return {
+        id: stats.id,
+        name: stats.name,
+        totalApplications: stats.TotalApplications,
+        successfulApplications: stats.SuccessfulApplications,
+        successRate: stats.SuccessRate,
+        performance: stats.Performance
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      const errorMessage = error.message.match(/Message: `([^`]+)`/)?.[1] || error.message;
+      throw new BadRequestException(errorMessage);
     }
   }
 
-  findAll() {
-    return `This action returns all employees`;
-  }
-
-  async findOneById(id: number) {
+  async create(createEmployeeDto: CreateEmployeeDto) {
     try {
-      let result = await this.prismaService
-        .$queryRaw`SELECT * FROM Admin WHERE id =${id}`;
+      // Hash password before storing
+      const hashedPassword = await bcrypt.hash(createEmployeeDto.password, 10);
+      
+      const result = await this.prismaService.$executeRaw`
+        EXEC dbo.sp_CreateEmployee 
+          @phone = ${createEmployeeDto.phone},
+          @address = ${createEmployeeDto.address},
+          @email = ${createEmployeeDto.email},
+          @name = ${createEmployeeDto.name},
+          @gender = ${createEmployeeDto.gender},
+          @age = ${createEmployeeDto.age},
+          @avatar = ${createEmployeeDto.avatar},
+          @password = ${hashedPassword}
+      `;
 
-      console.log(result);
-      return result[0];
+      return { id: result };
     } catch (error) {
-      throw new BadRequestException(error.meta.message);
+      const errorMessage = error.message.match(/Message: `([^`]+)`/)?.[1] || error.message;
+      throw new BadRequestException(errorMessage);
     }
   }
-  async findOneByEmail(email: string) {
-    try {
-      let result = await this.prismaService
-        .$queryRaw`SELECT * FROM Admin WHERE email =${email}`;
 
-      console.log(result);
-      return result[0];
+  async findAll() {
+    const result = await this.prismaService.$queryRaw`
+      SELECT 
+        id,
+        phone,
+        address,
+        email,
+        name,
+        gender,
+        age,
+        avatar
+      FROM dbo.Employee
+      WHERE isBanned = 0
+    `;
+    
+    return result;
+  }
+
+  async findOne(id: number) {
+    const result = await this.prismaService.$queryRaw`
+      SELECT 
+        id,
+        phone,
+        address,
+        email,
+        name,
+        gender,
+        age,
+        avatar
+      FROM dbo.Employee
+      WHERE id = ${id} AND isBanned = 0
+    `;
+
+    const employee = result[0];
+    if (!employee) {
+      throw new NotFoundException('Employee not found');
+    }
+
+    return employee;
+  }
+
+  async update(id: number, updateEmployeeDto: UpdateEmployeeDto) {
+    try {
+      await this.prismaService.$executeRaw`
+        EXEC dbo.sp_UpdateEmployee 
+          @id = ${id},
+          @phone = ${updateEmployeeDto.phone},
+          @address = ${updateEmployeeDto.address},
+          @email = ${updateEmployeeDto.email},
+          @name = ${updateEmployeeDto.name},
+          @gender = ${updateEmployeeDto.gender},
+          @age = ${updateEmployeeDto.age},
+          @avatar = ${updateEmployeeDto.avatar}
+      `;
+      
+      return this.findOne(id);
     } catch (error) {
-      throw new BadRequestException(error.meta.message);
+      const errorMessage = error.message.match(/Message: `([^`]+)`/)?.[1] || error.message;
+      throw new BadRequestException(errorMessage);
     }
   }
-  update(id: number, updateEmployeeDto: UpdateEmployeeDto) {
-    return `This action updates a #${id} employee`;
-  }
 
-  remove(id: number) {
-    return `This action removes a #${id} employee`;
+  async remove(id: number) {
+    try {
+      await this.prismaService.$executeRaw`
+        EXEC dbo.sp_DeleteEmployee @id = ${id}
+      `;
+      return { message: 'Employee deleted successfully' };
+    } catch (error) {
+      const errorMessage = error.message.match(/Message: `([^`]+)`/)?.[1] || error.message;
+      throw new BadRequestException(errorMessage);
+    }
   }
 }

@@ -24,9 +24,9 @@ export class FilesService {
     });
   }
 
-  async uploadFile(file: Express.Multer.File, folder_type: string) {
+  async uploadFile(file: Express.Multer.File) {
     const storage = getStorage();
-    const path = `${folder_type}/${file.originalname}`;
+    const path = `cv/${file.originalname}`;
     const storageRef = ref(storage, path);
     // Create file metadata including the content type
     const metadata = {
@@ -46,8 +46,7 @@ export class FilesService {
           name: file.originalname,
           url: downloadURL,
           size: file.size,
-          mimeType: file.mimetype,
-          folderType: folder_type,
+          mimeType: file.mimetype
         },
       });
     } catch (error) {
@@ -61,6 +60,19 @@ export class FilesService {
     const storageRef = ref(storage, filePath);
     try {
       await deleteObject(storageRef);
+      const file = await this.prismaservice.file.findFirst({
+        where: {
+          url: filePath,
+        },
+      });
+      if (!file) {
+        throw new HttpException('File not found', 404);
+      }
+      await this.prismaservice.file.delete({
+        where: {
+          id: file.id
+        },
+      });
     } catch (error) {
       throw new HttpException('File not found', 404);
     }
