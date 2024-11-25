@@ -1,16 +1,5 @@
 import { Type } from 'class-transformer';
-import {
-  IsOptional,
-  IsString,
-  IsInt,
-  IsBoolean,
-  IsEmail,
-  IsDate,
-  IsArray,
-  IsNotEmpty,
-  IsEnum,
-  Min,
-} from 'class-validator';
+import { IsOptional, IsString, IsInt, IsBoolean, IsEmail, IsDate, IsArray, IsNotEmpty, IsEnum, Min } from 'class-validator';
 import { Gender } from 'utils/constant';
 
 export class CreateEmployeeDto {
@@ -26,7 +15,6 @@ export class CreateEmployeeDto {
   @IsEmail()
   email: string;
 
-  @IsOptional()
   @IsNotEmpty()
   @IsString()
   name: string;

@@ -8,24 +8,84 @@ export class RecruitmentPostService {
   constructor(private prismaService: PrismaService) {}
   async create(data: CreateRecruitmentPostDto) {
     const recruitmentPost = await this.prismaService.$queryRaw`
-      INSERT INTO RecruitmentPost (title, description, employerId, datePosted, deadline)
-      VALUES (${data.title}, ${data.description}, ${data.employerId}, ${data.datePosted}, ${data.deadline});
-    `;
+  INSERT INTO RecruitmentPost (title, description, employerId, datePosted, deadline)
+  OUTPUT INSERTED.id
+  VALUES (${data.title}, ${data.description}, ${data.employerId}, ${data.datePosted}, ${data.deadline});
+`;
 
-    return data;
+    // Lấy id từ bản ghi vừa chèn
+    const id = recruitmentPost[0].id; // Giả sử kết quả trả về là một mảng
+
+    // Trả về dữ liệu kèm theo id
+    return { ...data, id };
   }
+  async countTotalPosts() {
+    const count = await this.prismaService.$queryRaw`
+      SELECT COUNT(*) as total FROM "RecruitmentPost";
+    `;
+    return count[0].total; // Số lượng bản ghi
+  }
+  async findPaginatedPosts(page: number, pageSize: number) {
+    const CURRENT_DATE = new Date().toISOString();
+    const offset = (page - 1) * pageSize;
 
-  async findAll() {
-    const recruitmentPost = await this.prismaService.$queryRaw`
-    SELECT * FROM RecruitmentPost ;
+    // Lấy tổng số bản ghi
+    const totalPosts = await this.countTotalPosts();
+
+    // Lấy dữ liệu phân trang
+    const recruitmentPosts = await this.prismaService.$queryRaw`
+    SELECT rp.id,
+           rp.title,
+           rp.description,
+           rp.datePosted,
+           rp.deadline,
+           jd.location,
+           jd.experience,
+           jd.level,
+           jd.salary,
+           jd.quantity,
+           jd.employmentType,
+           jd.gender 
+    FROM "RecruitmentPost" rp
+    LEFT JOIN "JobDescription" jd ON rp.id = jd."recruitmentPostId"
+    WHERE rp.datePosted < ${CURRENT_DATE}  
+      or rp.deadline > ${CURRENT_DATE}     
+    ORDER BY rp.createdAt DESC               -- Đảm bảo có ORDER BY
+    OFFSET ${offset} ROWS
+    FETCH NEXT ${pageSize} ROWS ONLY; 
   `;
-    return recruitmentPost;
+    // Tính số trang
+    const totalPages = Math.ceil(totalPosts / pageSize);
+
+    return {
+      totalPosts,
+      totalPages,
+      recruitmentPosts,
+    };
   }
 
   async findOne(id: number) {
+    const CURRENT_DATE = new Date().toISOString();
     const recruitmentPost = await this.prismaService.$queryRaw`
-    SELECT * FROM RecruitmentPost WHERE id = ${id};
-  `;
+  SELECT rp.id,
+         rp.title,
+         rp.description,
+         rp.datePosted,
+         rp.deadline,
+         jd.location,
+         jd.experience,
+         jd.level,
+         jd.salary,
+         jd.quantity,
+         jd.employmentType,
+         jd.gender 
+  FROM "RecruitmentPost" rp
+  LEFT JOIN "JobDescription" jd ON rp.id = jd."recruitmentPostId"
+  WHERE rp.id = ${id}  
+  and rp.datePosted < ${CURRENT_DATE}  
+  -- and rp.deadline > ${CURRENT_DATE}    
+`;
+
     return recruitmentPost;
   }
 
@@ -62,11 +122,16 @@ export class RecruitmentPostService {
   }
 
   async remove(id: number) {
-    await this.prismaService.$queryRaw`
-    DELETE FROM RecruitmentPostPosition WHERE recruitmentPostId = ${id}`;
-    const deletedPost = await this.prismaService.$queryRaw`
-    DELETE FROM RecruitmentPost WHERE id = ${id} RETURNING * `;
+    const currentDate = new Date();
+    currentDate.setFullYear(currentDate.getFullYear() - 1);
+    const CURRENT_DATE_MINUS_ONE_YEAR = currentDate.toISOString();
+    await this.prismaService.$executeRaw`
+      UPDATE RecruitmentPost
+      SET deadline = ${CURRENT_DATE_MINUS_ONE_YEAR} , updatedAt = ${currentDate}
+      WHERE id = ${id};  
+    `;
   }
+
   async analyzeTrends(industry?: string, minRating: number = 3.0) {
     try {
       const result = (await this.prismaService.$queryRaw`

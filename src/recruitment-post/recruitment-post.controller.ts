@@ -26,10 +26,23 @@ export class RecruitmentPostController {
     return this.recruitmentPostService.create(createRecruitmentPostDto);
   }
 
-  @Public()
-  @Get()
-  findAll() {
-    return this.recruitmentPostService.findAll();
+  @Public() // Đánh dấu endpoint này là công khai
+  @Get() // Phương thức GET cho đường dẫn này
+  async findAll(
+    @Query('page') page: string = '1', // Tham số 'page', mặc định là '1'
+    @Query('pageSize') pageSize: string = '5', // Tham số 'pageSize', mặc định là '5'
+  ) {
+    const pageNumber = parseInt(page, 10); // Chuyển đổi sang số nguyên
+    const size = parseInt(pageSize, 10); // Chuyển đổi sang số nguyên
+
+    const result = await this.recruitmentPostService.findPaginatedPosts(
+      pageNumber,
+      size,
+    );
+    return {
+      success: true,
+      ...result, // Gộp kết quả từ findPaginatedPosts
+    };
   }
 
   @Public()
@@ -56,7 +69,7 @@ export class RecruitmentPostController {
   @ApiQuery({ name: 'minRating', required: false })
   analyzeTrends(
     @Query('industry') industry?: string,
-    @Query('minRating') minRating?: number
+    @Query('minRating') minRating?: number,
   ) {
     return this.recruitmentPostService.analyzeTrends(industry, minRating);
     // Lấy tất cả các ngành
@@ -69,7 +82,6 @@ export class RecruitmentPostController {
     // GET /recruitment-post/trends/analyze?industry=Công nghệ thông tin&minRating=3.5
   }
 
-
   @Public()
   @Get('stats/company')
   @ApiQuery({ name: 'minRating', required: false, type: Number })
@@ -78,12 +90,12 @@ export class RecruitmentPostController {
   getRecruitmentStatsByCompany(
     @Query('minRating') minRating?: number,
     @Query('minApplications') minApplications?: number,
-    @Query('industry') industry?: string
+    @Query('industry') industry?: string,
   ) {
-      return this.recruitmentPostService.getRecruitmentStatsByCompany(
+    return this.recruitmentPostService.getRecruitmentStatsByCompany(
       minRating,
       minApplications,
-      industry
+      industry,
     );
     // Các cách sử dụng:
     // GET /recruitment-post/stats/company

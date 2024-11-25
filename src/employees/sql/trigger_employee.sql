@@ -5,16 +5,19 @@ AFTER INSERT, UPDATE, DELETE
 AS
 BEGIN
     SET NOCOUNT ON;
-    
+
     DECLARE @action VARCHAR(10)
     DECLARE @currentTime DATETIME = GETDATE()
     DECLARE @currentUser NVARCHAR(100) = SYSTEM_USER
     DECLARE @clientIP VARCHAR(45) = CAST(CONNECTIONPROPERTY('client_net_address') AS VARCHAR(45))
-    
+
     -- Xác định loại hành động
-    IF EXISTS (SELECT * FROM INSERTED) AND EXISTS (SELECT * FROM DELETED)
+    IF EXISTS (SELECT *
+        FROM INSERTED) AND EXISTS (SELECT *
+        FROM DELETED)
         SET @action = 'UPDATE'
-    ELSE IF EXISTS (SELECT * FROM INSERTED)
+    ELSE IF EXISTS (SELECT *
+    FROM INSERTED)
         SET @action = 'INSERT'
     ELSE
         SET @action = 'DELETE'
@@ -23,8 +26,8 @@ BEGIN
     IF @action = 'UPDATE'
     BEGIN
         INSERT INTO [dbo].[EmployeeAuditLog]
-        (action, employeeId, field, oldValue, newValue, modifiedBy, modifiedAt, ipAddress, suspiciousActivity, suspiciousReason)
-        SELECT 
+            (action, employeeId, field, oldValue, newValue, modifiedBy, modifiedAt, ipAddress, suspiciousActivity, suspiciousReason)
+        SELECT
             'UPDATE',
             i.id,
             CASE 
@@ -65,50 +68,54 @@ BEGIN
             @clientIP,
             -- Phát hiện hoạt động đáng ngờ
             CASE 
-                WHEN d.email != i.email AND 
-                     (SELECT COUNT(*) FROM [dbo].[EmployeeAuditLog] 
-                      WHERE employeeId = i.id AND field = 'email' 
-                      AND modifiedAt > DATEADD(day, -1, @currentTime)) >= 3 
+                WHEN d.email != i.email AND
+                (SELECT COUNT(*)
+                FROM [dbo].[EmployeeAuditLog]
+                WHERE employeeId = i.id AND field = 'email'
+                    AND modifiedAt > DATEADD(day, -1, @currentTime)) >= 3 
                 THEN 1
-                WHEN d.password != i.password AND 
-                     (SELECT COUNT(*) FROM [dbo].[EmployeeAuditLog] 
-                      WHERE employeeId = i.id AND field = 'password' 
-                      AND modifiedAt > DATEADD(hour, -1, @currentTime)) >= 2
+                WHEN d.password != i.password AND
+                (SELECT COUNT(*)
+                FROM [dbo].[EmployeeAuditLog]
+                WHERE employeeId = i.id AND field = 'password'
+                    AND modifiedAt > DATEADD(hour, -1, @currentTime)) >= 2
                 THEN 1
                 ELSE 0
             END,
             CASE 
-                WHEN d.email != i.email AND 
-                     (SELECT COUNT(*) FROM [dbo].[EmployeeAuditLog] 
-                      WHERE employeeId = i.id AND field = 'email' 
-                      AND modifiedAt > DATEADD(day, -1, @currentTime)) >= 3 
+                WHEN d.email != i.email AND
+                (SELECT COUNT(*)
+                FROM [dbo].[EmployeeAuditLog]
+                WHERE employeeId = i.id AND field = 'email'
+                    AND modifiedAt > DATEADD(day, -1, @currentTime)) >= 3 
                 THEN N'Nhiều lần thay đổi email trong 24h'
-                WHEN d.password != i.password AND 
-                     (SELECT COUNT(*) FROM [dbo].[EmployeeAuditLog] 
-                      WHERE employeeId = i.id AND field = 'password' 
-                      AND modifiedAt > DATEADD(hour, -1, @currentTime)) >= 2
+                WHEN d.password != i.password AND
+                (SELECT COUNT(*)
+                FROM [dbo].[EmployeeAuditLog]
+                WHERE employeeId = i.id AND field = 'password'
+                    AND modifiedAt > DATEADD(hour, -1, @currentTime)) >= 2
                 THEN N'Nhiều lần thay đổi mật khẩu trong 1h'
                 ELSE NULL
             END
         FROM DELETED d
-        JOIN INSERTED i ON d.id = i.id
-        WHERE d.email != i.email 
-           OR d.name != i.name
-           OR d.password != i.password
-           OR d.phone != i.phone
-           OR d.address != i.address
-           OR d.age != i.age
-           OR d.gender != i.gender
-           OR d.avatar != i.avatar
-           OR d.isBanned != i.isBanned;
+            JOIN INSERTED i ON d.id = i.id
+        WHERE d.email != i.email
+            OR d.name != i.name
+            OR d.password != i.password
+            OR d.phone != i.phone
+            OR d.address != i.address
+            OR d.age != i.age
+            OR d.gender != i.gender
+            OR d.avatar != i.avatar
+            OR d.isBanned != i.isBanned;
     END
 
     -- Theo dõi INSERT mới
     IF @action = 'INSERT'
     BEGIN
         INSERT INTO [dbo].[EmployeeAuditLog]
-        (action, employeeId, field, newValue, modifiedBy, modifiedAt, ipAddress, suspiciousActivity, suspiciousReason)
-        SELECT 
+            (action, employeeId, field, newValue, modifiedBy, modifiedAt, ipAddress, suspiciousActivity, suspiciousReason)
+        SELECT
             'INSERT',
             id,
             'NEW_EMPLOYEE',
@@ -116,21 +123,25 @@ BEGIN
             @currentUser,
             @currentTime,
             @clientIP,
-            -- Phát hiện đăng ký nhiều tài khoản
+            -- Phát hiện đăng ký nhiều tài khoản (thêm điều kiện modifiedBy và ipAddress)
             CASE 
-                WHEN (SELECT COUNT(*) 
-                      FROM [dbo].[Employee] 
-                      WHERE email LIKE '%' + SUBSTRING(i.email, CHARINDEX('@', i.email), LEN(i.email)) 
-                      AND createdAt > DATEADD(hour, -1, @currentTime)) >= 5
+                WHEN (SELECT COUNT(*)
+            FROM [dbo].[EmployeeAuditLog]
+            WHERE email LIKE '%' + SUBSTRING(i.email, CHARINDEX('@', i.email), LEN(i.email))
+                AND modifiedBy = @currentUser
+                AND ipAddress = @clientIP
+                AND modifiedAt > DATEADD(hour, -1, @currentTime)) >= 5
                 THEN 1
                 ELSE 0
             END,
             CASE 
-                WHEN (SELECT COUNT(*) 
-                      FROM [dbo].[Employee] 
-                      WHERE email LIKE '%' + SUBSTRING(i.email, CHARINDEX('@', i.email), LEN(i.email)) 
-                      AND createdAt > DATEADD(hour, -1, @currentTime)) >= 5
-                THEN N'Nhiều tài khoản được tạo từ cùng domain trong 1h'
+                WHEN (SELECT COUNT(*)
+            FROM [dbo].[EmployeeAuditLog]
+            WHERE email LIKE '%' + SUBSTRING(i.email, CHARINDEX('@', i.email), LEN(i.email))
+                AND modifiedBy = @currentUser
+                AND ipAddress = @clientIP
+                AND modifiedAt > DATEADD(hour, -1, @currentTime)) >= 5
+                THEN N'Nhiều tài khoản được tạo từ cùng domain trong 1h bởi cùng một người dùng'
                 ELSE NULL
             END
         FROM INSERTED i;
@@ -140,8 +151,8 @@ BEGIN
     IF @action = 'DELETE'
     BEGIN
         INSERT INTO [dbo].[EmployeeAuditLog]
-        (action, employeeId, field, oldValue, modifiedBy, modifiedAt, ipAddress, suspiciousActivity, suspiciousReason)
-        SELECT 
+            (action, employeeId, field, oldValue, modifiedBy, modifiedAt, ipAddress, suspiciousActivity, suspiciousReason)
+        SELECT
             'DELETE',
             id,
             'DELETED_EMPLOYEE',
@@ -151,40 +162,40 @@ BEGIN
             @clientIP,
             -- Phát hiện xóa hàng loạt
             CASE 
-                WHEN (SELECT COUNT(*) 
-                      FROM [dbo].[EmployeeAuditLog] 
-                      WHERE action = 'DELETE' 
-                      AND modifiedAt > DATEADD(minute, -5, @currentTime)) >= 10
+                WHEN (SELECT COUNT(*)
+            FROM [dbo].[EmployeeAuditLog]
+            WHERE action = 'DELETE'
+                AND modifiedAt > DATEADD(minute, -5, @currentTime)) >= 10
                 THEN 1
                 ELSE 0
             END,
             CASE 
-                WHEN (SELECT COUNT(*) 
-                      FROM [dbo].[EmployeeAuditLog] 
-                      WHERE action = 'DELETE' 
-                      AND modifiedAt > DATEADD(minute, -5, @currentTime)) >= 10
+                WHEN (SELECT COUNT(*)
+            FROM [dbo].[EmployeeAuditLog]
+            WHERE action = 'DELETE'
+                AND modifiedAt > DATEADD(minute, -5, @currentTime)) >= 10
                 THEN N'Phát hiện xóa hàng loạt nhân viên trong 5 phút'
                 ELSE NULL
             END
         FROM DELETED;
     END
 
-    -- Thông báo hoạt động đáng ngờ
-    IF EXISTS (SELECT 1 FROM [dbo].[EmployeeAuditLog] 
-               WHERE suspiciousActivity = 1 
-               AND modifiedAt = @currentTime)
-    BEGIN
-        DECLARE @message NVARCHAR(MAX)
-        SELECT @message = STRING_AGG(CONCAT('Hoạt động đáng ngờ: ', suspiciousReason, 
-                                          ' (Employee ID: ', employeeId, 
-                                          ', IP: ', ipAddress, 
-                                          ', User: ', modifiedBy, ')'), CHAR(10))
-        FROM [dbo].[EmployeeAuditLog]
-        WHERE suspiciousActivity = 1 
-        AND modifiedAt = @currentTime;
+-- Thông báo hoạt động đáng ngờ
+-- IF EXISTS (SELECT 1 FROM [dbo].[EmployeeAuditLog] 
+--            WHERE suspiciousActivity = 1 
+--            AND modifiedAt = @currentTime)
+-- BEGIN
+--     DECLARE @message NVARCHAR(MAX)
+--     SELECT @message = STRING_AGG(CONCAT(N'Hoạt động đáng ngờ: ', suspiciousReason, 
+--                                       ' (Employee ID: ', employeeId, 
+--                                       ', IP: ', ipAddress, 
+--                                       ', User: ', modifiedBy, ')'), CHAR(10))
+--     FROM [dbo].[EmployeeAuditLog]
+--     WHERE suspiciousActivity = 1 
+--     AND modifiedAt = @currentTime;
 
-        RAISERROR (@message, 16, 1);
-    END
+--     RAISERROR (@message, 16, 1);
+-- END
 END;
 
 
@@ -193,8 +204,10 @@ END;
 -- TEST TRIGGER
 -- 1. Tạo nhân viên mẫu
 -- Tạo nhân viên mẫu
-INSERT INTO [dbo].[Employee] (email, name, password, phone, address, age, gender, avatar, isBanned)
-VALUES ('test.employee@company.com', 'Test Employee', 'password123', '0123456789', 
+INSERT INTO [dbo].[Employee]
+    (email, name, password, phone, address, age, gender, avatar, isBanned)
+VALUES
+    ('test.employee@company.com', 'Test Employee', 'password123', '0123456789',
         'Test Address', 25, 'Male', 'avatar.jpg', 0);
 
 -- 2.1 Kiểm tra thay đổi thông tin cơ bản
@@ -206,8 +219,11 @@ SET name = 'Updated Name',
 WHERE email = 'test.employee@company.com';
 
 -- Kiểm tra log
-SELECT * FROM [dbo].[EmployeeAuditLog]
-WHERE employeeId = (SELECT id FROM [dbo].[Employee] WHERE email = 'test.employee@company.com')
+SELECT *
+FROM [dbo].[EmployeeAuditLog]
+WHERE employeeId = (SELECT id
+FROM [dbo].[Employee]
+WHERE email = 'test.employee@company.com')
 ORDER BY modifiedAt DESC;
 
 -- 2.2. Kiểm tra cảnh báo thay đổi email nhiều lần
@@ -234,7 +250,8 @@ WHERE email = 'test4@company.com';
 
 
 -- Kiểm tra log và cảnh báo
-SELECT * FROM [dbo].[EmployeeAuditLog]
+SELECT *
+FROM [dbo].[EmployeeAuditLog]
 WHERE field = 'email'
 ORDER BY modifiedAt DESC;
 
@@ -253,38 +270,62 @@ SET password = 'password3'
 WHERE email = 'test4@company.com';
 
 -- Kiểm tra log và cảnh báo
-SELECT * FROM [dbo].[EmployeeAuditLog]
+SELECT *
+FROM [dbo].[EmployeeAuditLog]
 WHERE field = 'password'
 ORDER BY modifiedAt DESC;
 
 -- 3. Kiểm tra INSERT hàng loạt
 -- Tạo nhiều tài khoản cùng domain trong 1h
-INSERT INTO [dbo].[Employee] (email, name, password, phone)
-VALUES ('test1@testdomain.com', 'Test 1', 'pass1', '1111111111');
-INSERT INTO [dbo].[Employee] (email, name, password, phone)
-VALUES ('test2@testdomain.com', 'Test 2', 'pass2', '2222222222');
-INSERT INTO [dbo].[Employee] (email, name, password, phone)
-VALUES ('test3@testdomain.com', 'Test 3', 'pass3', '3333333333');
-INSERT INTO [dbo].[Employee] (email, name, password, phone)
-VALUES ('test4@testdomain.com', 'Test 4', 'pass4', '4444444444');
-INSERT INTO [dbo].[Employee] (email, name, password, phone)
-VALUES ('test5@testdomain.com', 'Test 5', 'pass5', '5555555555');
-INSERT INTO [dbo].[Employee] (email, name, password, phone)
-VALUES ('test6@testdomain.com', 'Test 6', 'pass6', '6666666666');
-INSERT INTO [dbo].[Employee] (email, name, password, phone)
-VALUES ('test7@testdomain.com', 'Test 7', 'pass7', '7777777777');
-INSERT INTO [dbo].[Employee] (email, name, password, phone)
-VALUES ('test8@testdomain.com', 'Test 8', 'pass8', '8888888888');
-INSERT INTO [dbo].[Employee] (email, name, password, phone)
-VALUES ('test9@testdomain.com', 'Test 9', 'pass9', '9999999999');
-INSERT INTO [dbo].[Employee] (email, name, password, phone)
-VALUES ('test10@testdomain.com', 'Test 10', 'pass10', '1010101010');
-INSERT INTO [dbo].[Employee] (email, name, password, phone)
-VALUES ('test11@testdomain.com', 'Test 11', 'pass11', '1111111111');
+INSERT INTO [dbo].[Employee]
+    (email, name, password, phone)
+VALUES
+    ('test1@testdomain.com', 'Test 1', 'pass1', '1111111111');
+INSERT INTO [dbo].[Employee]
+    (email, name, password, phone)
+VALUES
+    ('test2@testdomain.com', 'Test 2', 'pass2', '2222222222');
+INSERT INTO [dbo].[Employee]
+    (email, name, password, phone)
+VALUES
+    ('test3@testdomain.com', 'Test 3', 'pass3', '3333333333');
+INSERT INTO [dbo].[Employee]
+    (email, name, password, phone)
+VALUES
+    ('test4@testdomain.com', 'Test 4', 'pass4', '4444444444');
+INSERT INTO [dbo].[Employee]
+    (email, name, password, phone)
+VALUES
+    ('test5@testdomain.com', 'Test 5', 'pass5', '5555555555');
+INSERT INTO [dbo].[Employee]
+    (email, name, password, phone)
+VALUES
+    ('test6@testdomain.com', 'Test 6', 'pass6', '6666666666');
+INSERT INTO [dbo].[Employee]
+    (email, name, password, phone)
+VALUES
+    ('test7@testdomain.com', 'Test 7', 'pass7', '7777777777');
+INSERT INTO [dbo].[Employee]
+    (email, name, password, phone)
+VALUES
+    ('test8@testdomain.com', 'Test 8', 'pass8', '8888888888');
+INSERT INTO [dbo].[Employee]
+    (email, name, password, phone)
+VALUES
+    ('test9@testdomain.com', 'Test 9', 'pass9', '9999999999');
+INSERT INTO [dbo].[Employee]
+    (email, name, password, phone)
+VALUES
+    ('test10@testdomain.com', 'Test 10', 'pass10', '1010101010');
+INSERT INTO [dbo].[Employee]
+    (email, name, password, phone)
+VALUES
+    ('test11@testdomain.com', 'Test 11', 'pass11', '1111111111');
 -- Kiểm tra log và cảnh báo
-SELECT * FROM [dbo].[EmployeeAuditLog]
+SELECT *
+FROM [dbo].[EmployeeAuditLog]
 WHERE action = 'INSERT'
-AND suspiciousActivity = 1
+    AND suspiciousActivity = 1
 ORDER BY modifiedAt DESC;
 
 -- 4. Kiểm tra DELETE hàng loạt
@@ -298,14 +339,15 @@ BEGIN
 END
 
 -- Kiểm tra log và cảnh báo
-SELECT * FROM [dbo].[EmployeeAuditLog]
+SELECT *
+FROM [dbo].[EmployeeAuditLog]
 WHERE action = 'DELETE'
-AND suspiciousActivity = 1
+    AND suspiciousActivity = 1
 ORDER BY modifiedAt DESC;
 
 -- 5. Kiểm tra tổng hợp các hoạt động đáng ngờ
 -- Xem tất cả các hoạt động đáng ngờ
-SELECT 
+SELECT
     action,
     employeeId,
     field,

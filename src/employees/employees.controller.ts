@@ -1,23 +1,8 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  ValidationPipe,
-  UsePipes,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UsePipes, Query } from '@nestjs/common';
 import { EmployeesService } from './employees.service';
-import {
-  CreateEmployeeDto,
-  GetEmployeeEducationDto,
-} from './dto/create-employee.dto';
+import { CreateEmployeeDto, GetEmployeeEducationDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { Public, ResponseMessage } from 'src/decorators/customize';
-import { UpdateInfoEmployees } from './dto/update-info-employee.dto';
 
 @Controller('employees')
 export class EmployeesController {
@@ -25,13 +10,11 @@ export class EmployeesController {
 
   @Public()
   @Post()
-  @UsePipes(
-    new ValidationPipe({
-      transform: true, // Thêm option này
-      whitelist: true,
-      forbidNonWhitelisted: true,
-    }),
-  )
+  @UsePipes(new ValidationPipe({ 
+    transform: true,  // Thêm option này
+    whitelist: true,
+    forbidNonWhitelisted: true
+  }))
   @ResponseMessage('Create a new Employee')
   async create(@Body() createEmployeeDto: CreateEmployeeDto) {
     return this.employeesService.create(createEmployeeDto);
@@ -54,10 +37,7 @@ export class EmployeesController {
   @Public()
   @Patch(':id')
   @ResponseMessage('Update a Employee')
-  update(
-    @Param('id') id: string,
-    @Body() updateEmployeeDto: UpdateInfoEmployees,
-  ) {
+  update(@Param('id') id: string, @Body() updateEmployeeDto: UpdateEmployeeDto) {
     return this.employeesService.update(+id, updateEmployeeDto);
   }
 
@@ -71,17 +51,16 @@ export class EmployeesController {
   @Public()
   @Get('education/search')
   @ResponseMessage('Get Employee Education')
-  @UsePipes(
-    new ValidationPipe({
-      transform: true,
-      whitelist: true,
-      forbidNonWhitelisted: true,
-    }),
-  )
+  @UsePipes(new ValidationPipe({ 
+    transform: true,
+    whitelist: true,
+    forbidNonWhitelisted: true
+  }))
   getEmployeeEducation(@Query() query: GetEmployeeEducationDto) {
     return this.employeesService.getEmployeeEducation(query);
     // GET /employees/education/search?minAge=25&gender=Nam&schoolName=Harvard
   }
+
 
   @Public()
   @Get(':id/application-stats')
@@ -90,4 +69,5 @@ export class EmployeesController {
     return this.employeesService.getApplicationStats(+id);
     // GET /employees/1/application-stats
   }
+  
 }
