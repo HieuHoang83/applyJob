@@ -1,19 +1,16 @@
 import { Type } from 'class-transformer';
 import {
-  IsOptional,
-  IsString,
-  IsInt,
   IsBoolean,
   IsEmail,
-  IsDate,
-  IsArray,
-  IsNotEmpty,
   IsEnum,
-  Min,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
 } from 'class-validator';
 import { Gender } from 'utils/constant';
 
-export class CreateEmployeeDto {
+export class UpdateInfoEmployees {
   @IsOptional()
   @IsString()
   phone: string;
@@ -22,6 +19,7 @@ export class CreateEmployeeDto {
   @IsString()
   address: string;
 
+  @IsOptional()
   @IsNotEmpty()
   @IsEmail()
   email: string;
@@ -44,14 +42,6 @@ export class CreateEmployeeDto {
   @IsString()
   avatar: string;
 
-  @IsString()
-  @IsNotEmpty()
-  password: string;
-
-  @IsOptional()
-  @IsString()
-  refreshToken: string;
-
   @IsOptional()
   @IsString()
   provider: string;
@@ -59,20 +49,4 @@ export class CreateEmployeeDto {
   @IsOptional()
   @IsBoolean()
   emailVerified: boolean;
-}
-
-export class GetEmployeeEducationDto {
-  @IsOptional()
-  @IsInt()
-  @Min(0)
-  @Type(() => Number)
-  minAge?: number;
-
-  @IsOptional()
-  @IsString()
-  gender?: string;
-
-  @IsOptional()
-  @IsString()
-  schoolName?: string;
 }
