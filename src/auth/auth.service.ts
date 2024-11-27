@@ -45,19 +45,22 @@ export class AuthService {
   async login(userLoginDto: UserLoginDto, response: Response) {
     const { username, password, type } = userLoginDto;
     let user: any;
-    if (type == 'admin') {
+    if (type == 'Admin') {
       user = await this.adminsService.login(username, password);
-    } else if (type == 'employee') {
+    } else if (type == 'Employee') {
       user = await this.employeesService.login(username, password);
-    } else if (type == 'employer') {
+    } else {
       user = await this.employersService.login(username, password);
     }
+
     return {
       user: {
-        email: user.email,
-        name: user.name,
-        avatar: user.avatar,
-        isBanned: user.isBanned,
+        id: user?.id,
+
+        email: user?.email,
+        name: user?.name,
+        avatar: user?.avatar,
+        isBanned: user?.isBanned,
         type: type,
       },
     };

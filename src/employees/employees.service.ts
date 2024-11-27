@@ -194,7 +194,6 @@ export class EmployeesService {
       if (!this.CheckUserpassword(password, result[0].password)) {
         throw new BadRequestException('wrong password');
       }
-
       return result[0];
     } catch (error) {
       throw new BadRequestException(error);
