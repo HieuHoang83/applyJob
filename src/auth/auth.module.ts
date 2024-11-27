@@ -10,6 +10,9 @@ import { JwtStrategy } from './passport/jwt.strategy';
 import { AuthController } from './auth.controller';
 import { AdminsService } from 'src/admins/admins.service';
 import { PrismaModule } from 'prisma/prisma.module';
+import { EmployeesService } from 'src/employees/employees.service';
+import { EmployersService } from 'src/employers/employers.service';
+import { CompanyModule } from 'src/company/company.module';
 
 @Module({
   imports: [
@@ -25,9 +28,17 @@ import { PrismaModule } from 'prisma/prisma.module';
       }),
       inject: [ConfigService],
     }),
+    CompanyModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy, AdminsService],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    AdminsService,
+    EmployeesService,
+    EmployersService,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}

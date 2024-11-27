@@ -3,6 +3,7 @@ import { CreateEmployerDto } from './dto/create-employer.dto';
 import { UpdateEmployerDto } from './dto/update-employer.dto';
 import { PrismaService } from 'prisma/prisma.service';
 import { CompanyService } from 'src/company/company.service';
+import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
 
 @Injectable()
 export class EmployersService {
@@ -10,6 +11,11 @@ export class EmployersService {
     private prismaService: PrismaService,
     private companyService: CompanyService,
   ) {}
+  hashpassword = (password: string) => {
+    const salt = genSaltSync(10);
+    const hash = hashSync(password, salt);
+    return hash;
+  };
   async create(data: CreateEmployerDto) {
     const { email, name, password, department, position, companyId } = data;
 
@@ -21,7 +27,9 @@ export class EmployersService {
       const result = await this.prismaService.$queryRaw`
           INSERT INTO Employer (email, name, password, department, position, companyId, isBanned)
           OUTPUT inserted.id, inserted.name
-          VALUES (${email}, ${name}, ${password}, ${department}, ${position}, ${companyId}, 0)  ;
+          VALUES (${email}, ${name}, ${this.hashpassword(
+        password,
+      )}, ${department}, ${position}, ${companyId}, 0)  ;
          ;
         `;
 
@@ -120,6 +128,26 @@ export class EmployersService {
     } catch (error) {
       console.error(`Error deleting employer with id ${id}:`, error);
       throw error;
+    }
+  }
+  CheckUserpassword(password: string, hash: string) {
+    return compareSync(password, hash);
+  }
+  async login(email: string, password: string) {
+    try {
+      let result = await this.prismaService
+        .$queryRaw`SELECT * FROM Employer WHERE email =${email} `;
+      console.log(result[0]);
+      if (result[0] === undefined) {
+        throw new BadRequestException('not found');
+      }
+      if (!this.CheckUserpassword(password, result[0].password)) {
+        throw new BadRequestException('Sai password');
+      }
+
+      return result[0];
+    } catch (error) {
+      throw new BadRequestException(error);
     }
   }
 }

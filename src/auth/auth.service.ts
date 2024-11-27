@@ -9,6 +9,8 @@ import ms from 'ms';
 import { AdminsService } from 'src/admins/admins.service';
 import { genSaltSync, hashSync } from 'bcryptjs';
 import { UserLoginDto } from './dto/login-user.dto';
+import { EmployeesService } from 'src/employees/employees.service';
+import { EmployersService } from 'src/employers/employers.service';
 // import { RolesService } from 'src/roles/roles.service';
 
 @Injectable()
@@ -18,6 +20,8 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
     private adminsService: AdminsService,
+    private employeesService: EmployeesService,
+    private employersService: EmployersService,
   ) {}
 
   hashpassword = (password: string) => {
@@ -40,40 +44,21 @@ export class AuthService {
 
   async login(userLoginDto: UserLoginDto, response: Response) {
     const { username, password, type } = userLoginDto;
-
-    let user: any = await this.adminsService.login(username, password);
-
-    const payload = {
-      sub: 'token login',
-      iss: 'from server',
-      id: user?.id,
-      username,
-      type,
-    };
-
-    const refreshToken = this.createRefreshToken(payload);
-
-    // update user with refresh token
-    //await this.adminsService.updateUserToken(user.id, refreshToken);
-
-    // set refresh token as cookie
-    response.cookie('refresh_token', refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      maxAge: ms(this.configService.get<string>('JWT_REFRESH_EXPIRE')),
-    });
-
+    let user: any;
+    if (type == 'admin') {
+      user = await this.adminsService.login(username, password);
+    } else if (type == 'employee') {
+      user = await this.employeesService.login(username, password);
+    } else if (type == 'employer') {
+      user = await this.employersService.login(username, password);
+    }
     return {
-      access_token: this.jwtService.sign(payload),
       user: {
         email: user.email,
         name: user.name,
-        gender: user.gender,
-        age: user.age,
         avatar: user.avatar,
         isBanned: user.isBanned,
-        refreshToken: user.refreshToken,
+        type: type,
       },
     };
   }

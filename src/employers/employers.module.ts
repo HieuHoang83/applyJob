@@ -11,5 +11,6 @@ import { CompanyModule } from 'src/company/company.module';
 
   controllers: [EmployersController],
   providers: [EmployersService, PrismaService, CompanyService],
+  exports: [EmployersService],
 })
 export class EmployersModule {}
