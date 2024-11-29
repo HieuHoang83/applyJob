@@ -22,31 +22,39 @@ export class RecordsOnPostController {
   constructor(private readonly recordsOnPostService: RecordsOnPostService) {}
   @Public()
   @Post()
-  create(
-    @Body() createRecordOnPostDto: CreateRecordOnPostDto,
-  ) {
+  create(@Body() createRecordOnPostDto: CreateRecordOnPostDto) {
     return this.recordsOnPostService.create(createRecordOnPostDto);
   }
 
   @Public()
   @Get()
-  findAll(
-    @GetPaginateInfo() paginateInfo: PaginateInfo
-  ) {
+  findAll(@GetPaginateInfo() paginateInfo: PaginateInfo) {
     return this.recordsOnPostService.findAll(paginateInfo);
   }
+  @Public() // Đánh dấu endpoint này là công khai
+  @Get(':post') // Phương thức GET cho đường dẫn này
+  async findMany(
+    @Query('page') page: string = '1', // Tham số 'page', mặc định là '1'
+    @Query('pageSize') pageSize: string = '10', // Tham số 'pageSize', mặc định là '5'
+    @Param('post') post: string,  
+  ) {
+    const pageNumber = parseInt(page, 10); // Chuyển đổi sang số nguyên
+    const size = parseInt(pageSize, 10); // Chuyển đổi sang số nguyên
 
-  @Public()
-  @Get(':post')
-  findMany(@Param('post') post: string) {
-    return this.recordsOnPostService.findMany(+post);
+    const result = await this.recordsOnPostService.findMany(
+      +post,
+      pageNumber,
+      size,
+    );
+    return {
+      success: true,
+      ...result, // Gộp kết quả từ findPaginatedPosts
+    };
   }
 
   @Public()
   @Patch()
-  update(
-    @Body() updateRecordOnPostDto: UpdateRecordOnPostDto
-  ) {
+  update(@Body() updateRecordOnPostDto: UpdateRecordOnPostDto) {
     return this.recordsOnPostService.update(updateRecordOnPostDto);
   }
 

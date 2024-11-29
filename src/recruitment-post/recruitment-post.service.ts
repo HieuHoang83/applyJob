@@ -19,18 +19,26 @@ export class RecruitmentPostService {
     // Trả về dữ liệu kèm theo id
     return { ...data, id };
   }
-  async countTotalPosts() {
-    const count = await this.prismaService.$queryRaw`
-      SELECT COUNT(*) as total FROM "RecruitmentPost";
-    `;
-    return count[0].total; // Số lượng bản ghi
+  async countTotalPosts(option: string) {
+    const CURRENT_DATE = new Date().toISOString();
+    if (option == 'still') {
+      const count = await this.prismaService.$queryRaw`
+        SELECT COUNT(*) as total FROM "RecruitmentPost" WHERE deadline > ${CURRENT_DATE}   ;
+      `;
+      return count[0].total; // Số lượng bản ghi
+    } else {
+      const count = await this.prismaService.$queryRaw`
+        SELECT COUNT(*) as total FROM "RecruitmentPost" WHERE deadline <= ${CURRENT_DATE}   ;
+      `;
+      return count[0].total; // Số lượng bản ghi
+    }
   }
   async findPaginatedPosts(page: number, pageSize: number) {
     const CURRENT_DATE = new Date().toISOString();
     const offset = (page - 1) * pageSize;
 
     // Lấy tổng số bản ghi
-    const totalPosts = await this.countTotalPosts();
+    const totalPosts = await this.countTotalPosts('nostill');
 
     // Lấy dữ liệu phân trang
     const recruitmentPosts = await this.prismaService.$queryRaw`
@@ -48,8 +56,7 @@ export class RecruitmentPostService {
            jd.gender 
     FROM "RecruitmentPost" rp
     LEFT JOIN "JobDescription" jd ON rp.id = jd."recruitmentPostId"
-    WHERE rp.datePosted < ${CURRENT_DATE}  
-      or rp.deadline > ${CURRENT_DATE}     
+    WHERE rp.deadline < ${CURRENT_DATE}     
     ORDER BY rp.createdAt DESC               -- Đảm bảo có ORDER BY
     OFFSET ${offset} ROWS
     FETCH NEXT ${pageSize} ROWS ONLY; 
@@ -63,7 +70,43 @@ export class RecruitmentPostService {
       recruitmentPosts,
     };
   }
+  async findPaginatedPostsStill(page: number, pageSize: number) {
+    const CURRENT_DATE = new Date().toISOString();
+    const offset = (page - 1) * pageSize;
 
+    // Lấy tổng số bản ghi
+    const totalPosts = await this.countTotalPosts('still');
+
+    // Lấy dữ liệu phân trang
+    const recruitmentPosts = await this.prismaService.$queryRaw`
+    SELECT rp.id,
+           rp.title,
+           rp.description,
+           rp.datePosted,
+           rp.deadline,
+           jd.location,
+           jd.experience,
+           jd.level,
+           jd.salary,
+           jd.quantity,
+           jd.employmentType,
+           jd.gender 
+    FROM "RecruitmentPost" rp
+    LEFT JOIN "JobDescription" jd ON rp.id = jd."recruitmentPostId"
+    WHERE rp.deadline > ${CURRENT_DATE}     
+    ORDER BY rp.createdAt DESC               -- Đảm bảo có ORDER BY
+    OFFSET ${offset} ROWS
+    FETCH NEXT ${pageSize} ROWS ONLY; 
+  `;
+    // Tính số trang
+    const totalPages = Math.ceil(totalPosts / pageSize);
+
+    return {
+      totalPosts,
+      totalPages,
+      recruitmentPosts,
+    };
+  }
   async findOne(id: number) {
     const CURRENT_DATE = new Date().toISOString();
     const recruitmentPost = await this.prismaService.$queryRaw`

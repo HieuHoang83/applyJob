@@ -30,15 +30,25 @@ export class RecruitmentPostController {
   @Get() // Phương thức GET cho đường dẫn này
   async findAll(
     @Query('page') page: string = '1', // Tham số 'page', mặc định là '1'
-    @Query('pageSize') pageSize: string = '5', // Tham số 'pageSize', mặc định là '5'
+    @Query('pageSize') pageSize: string = '10', // Tham số 'pageSize', mặc định là '5'
+    @Query('still') still: string = '10', // Tham số 'pageSize', mặc định là '5'
   ) {
     const pageNumber = parseInt(page, 10); // Chuyển đổi sang số nguyên
     const size = parseInt(pageSize, 10); // Chuyển đổi sang số nguyên
 
-    const result = await this.recruitmentPostService.findPaginatedPosts(
-      pageNumber,
-      size,
-    );
+    let result;
+    if (still === 'still') {
+      result = await this.recruitmentPostService.findPaginatedPostsStill(
+        pageNumber,
+        size,
+      );
+    } else {
+      result = await this.recruitmentPostService.findPaginatedPosts(
+        pageNumber,
+        size,
+      );
+    }
+
     return {
       success: true,
       ...result, // Gộp kết quả từ findPaginatedPosts
