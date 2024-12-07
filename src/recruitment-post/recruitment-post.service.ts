@@ -175,28 +175,32 @@ export class RecruitmentPostService {
     `;
   }
 
-  async analyzeTrends(industry?: string, minRating: number = 3.0) {
+  async filterRecordsByRequirements(
+    postId: number,
+    certificateName?: string,
+    schoolName?: string,
+    companyName?: string,
+  ) {
     try {
       const result = (await this.prismaService.$queryRaw`
-        SELECT * FROM dbo.AnalyzeRecruitmentTrends(
-          ${industry || null},
-          ${minRating}
-        )
+        EXEC [dbo].[sp_FilterRecordsByRequirements]
+          @postId = ${postId},
+          @certificateName = ${certificateName || null},
+          @schoolName = ${schoolName || null},
+          @companyName = ${companyName || null}
       `) as any[];
 
       return result.map((item) => ({
-        industry: item.industry,
-        companyName: item.CompanyName,
-        postId: Number(item.PostId), // Convert BigInt to Number
-        jobTitle: item.JobTitle,
-        salary: item.salary,
-        experience: item.experience,
-        level: item.level,
-        totalApplications: Number(item.TotalApplications), // Convert BigInt to Number
-        averageRating: Number(item.AverageRating.toFixed(2)),
-        industryRank: Number(item.IndustryRank), // Convert BigInt to Number
-        competitionLevel: item.CompetitionLevel,
-        attractivenessLevel: item.AttractivenessLevel,
+        recordId: Number(item.RecordId),
+        recordTitle: item.RecordTitle,
+        employeeId: Number(item.EmployeeId),
+        employeeName: item.EmployeeName,
+        employeeEmail: item.EmployeeEmail,
+        applicationStatus: item.ApplicationStatus,
+        appliedDate: item.AppliedDate,
+        certificates: item.Certificates ? item.Certificates.split(', ') : [],
+        schools: item.Schools ? item.Schools.split(', ') : [],
+        companies: item.Companies ? item.Companies.split(', ') : [],
       }));
     } catch (error) {
       const errorMessage =
@@ -224,6 +228,44 @@ export class RecruitmentPostService {
         totalApplications: Number(item.TotalApplications),
         averageRating: Number(item.AverageRating.toFixed(2)),
         totalPosts: Number(item.TotalPosts),
+      }));
+    } catch (error) {
+      const errorMessage =
+        error.message.match(/Message: `([^`]+)`/)?.[1] || error.message;
+      throw new BadRequestException(errorMessage);
+    }
+  }
+
+  async analyzeRecruitmentTrends(
+    industryFilter?: string,
+    minRating: number = 3.0,
+    startDate?: Date,
+    endDate?: Date,
+    levelType: 'Competition' | 'Attractiveness' = 'Competition',
+  ) {
+    try {
+      const result = (await this.prismaService.$queryRaw`
+        SELECT * FROM dbo.AnalyzeRecruitmentTrends(
+          ${industryFilter || null},
+          ${minRating},
+          ${startDate || null},
+          ${endDate || null},
+          ${levelType}
+        )
+      `) as any[];
+
+      return result.map((item) => ({
+        industry: item.industry,
+        companyName: item.CompanyName,
+        postId: Number(item.PostId),
+        jobTitle: item.JobTitle,
+        salary: Number(item.salary),
+        experience: item.experience,
+        level: item.level,
+        totalApplications: Number(item.TotalApplications),
+        averageRating: Number(item.AverageRating.toFixed(2)),
+        industryRank: Number(item.IndustryRank),
+        levelStatus: item.LevelStatus,
       }));
     } catch (error) {
       const errorMessage =

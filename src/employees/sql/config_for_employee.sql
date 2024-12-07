@@ -9,7 +9,7 @@ DBCC CHECKIDENT ('[dbo].[RecruitmentPost]', RESEED, 5);
 DROP PROCEDURE IF EXISTS dbo.sp_CreateEmployee;
 DROP PROCEDURE IF EXISTS dbo.sp_UpdateEmployee;
 DROP PROCEDURE IF EXISTS dbo.sp_DeleteEmployee;
-
+DROP PROCEDURE IF EXISTS dbo.sp_FilterRecordsByRequirements;
 -- Drop function
 -- DROP FUNCTION dbo.CalculateApplicationSuccess;
 DROP FUNCTION IF EXISTS dbo.CalculateApplicationSuccess;
@@ -21,5 +21,6 @@ DROP TRIGGER IF EXISTS TR_RecruitmentPost_TagLimit;
 DROP TRIGGER IF EXISTS TR_Employee_RecordLimit;
 DROP TRIGGER IF EXISTS TR_Employee_AuditAndSecurity;
 DROP TRIGGER IF EXISTS TR_Evaluation_UpdateRecruitmentPostStats;
+
 
 

@@ -73,23 +73,39 @@ export class RecruitmentPostController {
   remove(@Param('id') id: string) {
     return this.recruitmentPostService.remove(+id);
   }
+
   @Public()
   @Get('trends/analyze')
-  @ApiQuery({ name: 'industry', required: false })
-  @ApiQuery({ name: 'minRating', required: false })
-  analyzeTrends(
+  @ApiQuery({ name: 'industry', required: false, type: String })
+  @ApiQuery({ name: 'minRating', required: false, type: Number })
+  @ApiQuery({ name: 'startDate', required: false, type: String })
+  @ApiQuery({ name: 'endDate', required: false, type: String })
+  @ApiQuery({
+    name: 'levelType',
+    required: false,
+    enum: ['Competition', 'Attractiveness'],
+  })
+  analyzeRecruitmentTrends(
     @Query('industry') industry?: string,
     @Query('minRating') minRating?: number,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+    @Query('levelType') levelType?: 'Competition' | 'Attractiveness',
   ) {
-    return this.recruitmentPostService.analyzeTrends(industry, minRating);
-    // Lấy tất cả các ngành
+    return this.recruitmentPostService.analyzeRecruitmentTrends(
+      industry,
+      minRating,
+      startDate ? new Date(startDate) : undefined,
+      endDate ? new Date(endDate) : undefined,
+      levelType,
+    );
+    // Các cách sử dụng:
     // GET /recruitment-post/trends/analyze
-
-    // Lọc theo ngành
     // GET /recruitment-post/trends/analyze?industry=Công nghệ thông tin
-
-    // Lọc theo ngành và rating tối thiểu
-    // GET /recruitment-post/trends/analyze?industry=Công nghệ thông tin&minRating=3.5
+    // GET /recruitment-post/trends/analyze?minRating=3.5
+    // GET /recruitment-post/trends/analyze?startDate=2022-01-01&endDate=2024-12-31
+    // GET /recruitment-post/trends/analyze?levelType=Attractiveness
+    // GET /recruitment-post/trends/analyze?industry=Công nghệ thông tin&minRating=3.5&startDate=2022-01-01&endDate=2024-12-31&levelType=Competition
   }
 
   @Public()
@@ -113,5 +129,30 @@ export class RecruitmentPostController {
     // GET /recruitment-post/stats/company?minApplications=10
     // GET /recruitment-post/stats/company?industry=Technology
     // GET /recruitment-post/stats/company?minRating=4.0&minApplications=10&industry=Technology
+  }
+
+  @Public()
+  @Get(':postId/filter-records')
+  @ApiQuery({ name: 'certificateName', required: false })
+  @ApiQuery({ name: 'schoolName', required: false })
+  @ApiQuery({ name: 'companyName', required: false })
+  filterRecordsByRequirements(
+    @Param('postId') postId: number,
+    @Query('certificateName') certificateName?: string,
+    @Query('schoolName') schoolName?: string,
+    @Query('companyName') companyName?: string,
+  ) {
+    return this.recruitmentPostService.filterRecordsByRequirements(
+      postId,
+      certificateName,
+      schoolName,
+      companyName,
+    );
+    // Các cách sử dụng:
+    // GET /recruitment-post/1/filter-records
+    // GET /recruitment-post/1/filter-records?certificateName=AWS
+    // GET /recruitment-post/1/filter-records?schoolName=Bach Khoa
+    // GET /recruitment-post/1/filter-records?companyName=FPT
+    // GET /recruitment-post/1/filter-records?certificateName=AWS&schoolName=Bach Khoa&companyName=FPT
   }
 }

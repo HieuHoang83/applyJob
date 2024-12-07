@@ -24,7 +24,7 @@ model Employee {
   email         String        @unique
   name          String
   gender        String?
-  age           Int?
+  birthday      DateTime?
   avatar        String?
   password      String
   createdAt     DateTime      @default(now())
@@ -89,7 +89,7 @@ model Employer {
   email            String            @unique
   name             String
   gender           String?
-  age              Int?
+  birthday         DateTime?
   avatar           String?
   password         String
   refreshToken     String?
@@ -270,7 +270,7 @@ model Admin {
   email            String        @unique
   name             String
   gender           String?
-  age              Int?
+  birthday         DateTime?
   avatar           String?
   password         String
   verificationCode String?

@@ -36,26 +36,26 @@ VALUES
 (N'DevOps Engineer');
 
 -- Thêm superAdmin
-INSERT INTO [dbo].[Admin] ([email], [name], [gender], [age], [password], [avatar])
+INSERT INTO [dbo].[Admin] ([email], [name], [gender], [birthday ], [password], [avatar])
 VALUES 
-('adminsuper@system.com', N'Lê Văn Hùng', N'Nam', 40, 'hashed_password_1', 'https://avatar1.com');
+('adminsuper@system.com', N'Lê Văn Hùng', N'Nam', DATEADD(YEAR, -40, GETDATE()), 'hashed_password_1', 'https://avatar1.com');
 
 -- Thêm Admin
-INSERT INTO [dbo].[Admin] ([email], [name], [gender], [age], [password], [avatar], [verificationCode],[superAdminId])
+INSERT INTO [dbo].[Admin] ([email], [name], [gender], [birthday ], [password], [avatar], [verificationCode],[superAdminId])
 VALUES 
-('admin1@system.com', N'Nguyễn Trí Đức', N'Nam', 30, 'hashed_password_2', 'https://avatar2.com', 475867595, 1),
-('admin2@system.com', N'Trần Thị Hà', N'Nữ', 28, 'hashed_password_3', 'https://avatar3.com', 574839712, 1),
-('admin3@system.com', N'Phạm Ngọc Minh', N'Nữ', 32, 'hashed_password_4', 'https://avatar4.com', 798357471, 1),
-('admin4@system.com', N'Hoàng Văn Hải', N'Nam', 29, 'hashed_password_5', 'https://avatar5.com', 470158473, 1);
+('admin1@system.com', N'Nguyễn Trí Đức', N'Nam', DATEADD(YEAR, -30, GETDATE()), 'hashed_password_2', 'https://avatar2.com', 475867595, 1),
+('admin2@system.com', N'Trần Thị Hà', N'Nữ', DATEADD(YEAR, -28, GETDATE()), 'hashed_password_3', 'https://avatar3.com', 574839712, 1),
+('admin3@system.com', N'Phạm Ngọc Minh', N'Nữ', DATEADD(YEAR, -32, GETDATE()), 'hashed_password_4', 'https://avatar4.com', 798357471, 1),
+('admin4@system.com', N'Hoàng Văn Hải', N'Nam', DATEADD(YEAR, -29, GETDATE()), 'hashed_password_5', 'https://avatar5.com', 470158473, 1);
 
 -- Thêm Employee
-INSERT INTO [dbo].[Employee] ([email], [name], [gender], [age], [phone], [address], [password], [avatar])
+INSERT INTO [dbo].[Employee] ([email], [name], [gender], [birthday], [phone], [address], [password], [avatar])
 VALUES 
-('nguyendung@gmail.com', N'Nguyễn Dũng', N'Nam', 25, '0987654321', N'Đà Nẵng', 'hashed_password_1', 'https://avatar1.com'),
-('lehuyen@gmail.com', N'Lê Thanh Huyền', N'Nữ', 28, '0987654322', N'Hà Nội', 'hashed_password_2', 'https://avatar2.com'),
-('doanhung@gmail.com', N'Đoàn Trí Hùng', N'Nam', 27, '0987654323', N'TP.HCM', 'hashed_password_3', 'https://avatar3.com'),
-('phamha@gmail.com', N'Phạm Thị Hà', N'Nữ', 26, '0987654324', N'Đà Nẵng', 'hashed_password_4', 'https://avatar4.com'),
-('tranminh@gmail.com', N'Trần Cao Minh', N'Nam', 29, '0987654325', N'Hà Nội', 'hashed_password_5', 'https://avatar5.com');
+('nguyendung@gmail.com', N'Nguyễn Dũng', N'Nam', DATEADD(YEAR, -25, GETDATE()), '0987654321', N'Đà Nẵng', 'hashed_password_1', 'https://avatar1.com'),
+('lehuyen@gmail.com', N'Lê Thanh Huyền', N'Nữ', DATEADD(YEAR, -28, GETDATE()), '0987654322', N'Hà Nội', 'hashed_password_2', 'https://avatar2.com'),
+('doanhung@gmail.com', N'Đoàn Trí Hùng', N'Nam', DATEADD(YEAR, -27, GETDATE()), '0987654323', N'TP.HCM', 'hashed_password_3', 'https://avatar3.com'),
+('phamha@gmail.com', N'Phạm Thị Hà', N'Nữ', DATEADD(YEAR, -26, GETDATE()), '0987654324', N'Đà Nẵng', 'hashed_password_4', 'https://avatar4.com'),
+('tranminh@gmail.com', N'Trần Cao Minh', N'Nam', DATEADD(YEAR, -29, GETDATE()), '0987654325', N'Hà Nội', 'hashed_password_5', 'https://avatar5.com');
 
 -- Thêm Education
 INSERT INTO [dbo].[Education] ([school], [major], [description], [startDate], [endDate], [employeeId])
@@ -85,13 +85,13 @@ VALUES
 ('Oracle Java Certificate', 'Oracle', 'https://cert1.oracle.com', 'https://img1.oracle.com', '2022-05-05', 5);
 
 -- Thêm Employer
-INSERT INTO [dbo].[Employer] ([email], [name], [gender], [age], [password], [department], [position], [companyId], [avatar], [hiringDate])
+INSERT INTO [dbo].[Employer] ([email], [name], [gender], [birthday], [password], [department], [position], [companyId], [avatar], [hiringDate])
 VALUES 
-('hr1@fpt.com', N'HR FPT', N'Nữ', 30, 'hashed_password_1', N'Nhân sự', N'HR Manager', 1, 'https://avatar1.com', GETDATE()),
-('hr1@viettel.com', N'HR Viettel', N'Nam', 35, 'hashed_password_2', N'Nhân sự', N'HR Director', 2, 'https://avatar2.com', GETDATE()),
-('hr1@vng.com', N'HR VNG', N'Nữ', 32, 'hashed_password_3', N'Nhân sự', N'HR Manager', 3, 'https://avatar3.com', GETDATE()),
-('hr1@momo.com', N'HR Momo', N'Nam', 28, 'hashed_password_4', N'Nhân sự', N'HR Specialist', 4, 'https://avatar4.com', GETDATE()),
-('hr1@tiki.com', N'HR Tiki', N'Nữ', 33, 'hashed_password_5', N'Nhân sự', N'HR Manager', 5, 'https://avatar5.com', GETDATE());
+('hr1@fpt.com', N'HR FPT', N'Nữ', DATEADD(YEAR, -30, GETDATE()), 'hashed_password_1', N'Nhân sự', N'HR Manager', 1, 'https://avatar1.com', GETDATE()),
+('hr1@viettel.com', N'HR Viettel', N'Nam', DATEADD(YEAR, -35, GETDATE()), 'hashed_password_2', N'Nhân sự', N'HR Director', 2, 'https://avatar2.com', GETDATE()),
+('hr1@vng.com', N'HR VNG', N'Nữ', DATEADD(YEAR, -32, GETDATE()), 'hashed_password_3', N'Nhân sự', N'HR Manager', 3, 'https://avatar3.com', GETDATE()),
+('hr1@momo.com', N'HR Momo', N'Nam', DATEADD(YEAR, -28, GETDATE()), 'hashed_password_4', N'Nhân sự', N'HR Specialist', 4, 'https://avatar4.com', GETDATE()),
+('hr1@tiki.com', N'HR Tiki', N'Nữ', DATEADD(YEAR, -33, GETDATE()), 'hashed_password_5', N'Nhân sự', N'HR Manager', 5, 'https://avatar5.com', GETDATE());
 
 -- Thêm RecruitmentPost
 INSERT INTO [dbo].[RecruitmentPost] ([title], [description], [employerId], [datePosted], [deadline])
@@ -132,11 +132,11 @@ VALUES
 -- Thêm RecordOnRecruitmentPost
 INSERT INTO [dbo].[RecordOnRecruitmentPost] ([recordId], [recruitmentPostId], [job], [status])
 VALUES 
-(1, 1, N'Senior Java Developer', N'Đã phỏng vấn'),
-(2, 2, N'React Native Developer', N'Đang xét duyệt'),
-(3, 3, N'DevOps Engineer', N'Đã nhận việc'),
-(4, 4, N'Frontend Developer', N'Đã phỏng vấn'),
-(5, 5, N'Fullstack Developer', N'Đang xét duyệt');
+(1, 1, N'Senior Java Developer', N'Đã chấp nhận'),
+(2, 2, N'React Native Developer', N'Đang chờ xét duyệt'),
+(3, 3, N'DevOps Engineer', N'Đã từ chối'),
+(4, 4, N'Frontend Developer', N'Đã chấp nhận'),
+(5, 5, N'Fullstack Developer', N'Đang chờ xét duyệt');
 
 -- Thêm Evaluation
 INSERT INTO [dbo].[Evaluation] ([recruitmentPostId], [employeeId], [rating], [saved])

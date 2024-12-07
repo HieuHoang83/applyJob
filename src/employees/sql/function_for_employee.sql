@@ -6,49 +6,107 @@ RETURNS TABLE
 AS
 RETURN
 (
-    WITH ApplicationStats AS (
-        SELECT 
-            COUNT(*) as TotalApplications,
-            SUM(CASE 
-                WHEN rop.status IN (N'Đã nhận việc', N'Đã chấp nhận offer') 
-                THEN 1 
-                ELSE 0 
-            END) as SuccessfulApplications
-        FROM Record r
-        JOIN RecordOnRecruitmentPost rop ON r.id = rop.recordId
-        WHERE @employeeId IS NULL OR r.ownerId = @employeeId
-    )
     SELECT 
-        e.id,
-        e.name,
-        stats.TotalApplications,
-        stats.SuccessfulApplications,
+        e.id AS EmployeeId,
+        e.name AS EmployeeName,
+        r.id AS RecordId,
+        r.title AS RecordTitle,
+        -- Số lần đã được xử lý của record này
+        SUM(CASE 
+            WHEN rop.status IN (N'Đã chấp nhận', N'Đã từ chối') 
+            THEN 1 
+            ELSE 0 
+        END) as ProcessedApplications,
+        -- Số lần được chấp nhận của record này
+        SUM(CASE 
+            WHEN rop.status = N'Đã chấp nhận'
+            THEN 1 
+            ELSE 0 
+        END) as SuccessfulApplications,
+        -- Tỉ lệ thành công của record này
         CAST(
             CASE 
-                WHEN stats.TotalApplications > 0 
-                THEN CAST(stats.SuccessfulApplications AS DECIMAL(10,2)) / stats.TotalApplications * 100
+                WHEN SUM(CASE 
+                    WHEN rop.status IN (N'Đã chấp nhận', N'Đã từ chối') 
+                    THEN 1 
+                    ELSE 0 
+                END) > 0 
+                THEN CAST(SUM(CASE 
+                    WHEN rop.status = N'Đã chấp nhận'
+                    THEN 1 
+                    ELSE 0 
+                END) AS DECIMAL(10,2)) / 
+                SUM(CASE 
+                    WHEN rop.status IN (N'Đã chấp nhận', N'Đã từ chối') 
+                    THEN 1 
+                    ELSE 0 
+                END) * 100
                 ELSE 0 
             END AS DECIMAL(10,2)
         ) as SuccessRate,
+        -- Đánh giá hiệu suất của record này
         CASE 
-            WHEN (CAST(stats.SuccessfulApplications AS DECIMAL(5,2)) / 
-                  NULLIF(stats.TotalApplications, 0) * 100) >= 70 THEN N'Rất tốt'
-            WHEN (CAST(stats.SuccessfulApplications AS DECIMAL(5,2)) / 
-                  NULLIF(stats.TotalApplications, 0) * 100) >= 50 THEN N'Tốt'
-            WHEN (CAST(stats.SuccessfulApplications AS DECIMAL(5,2)) / 
-                  NULLIF(stats.TotalApplications, 0) * 100) >= 30 THEN N'Trung bình'
-            WHEN stats.SuccessfulApplications > 0 THEN N'Cần cải thiện'
+            WHEN SUM(CASE 
+                WHEN rop.status IN (N'Đã chấp nhận', N'Đã từ chối') 
+                THEN 1 
+                ELSE 0 
+            END) = 0 THEN N'Chưa có kết quả xử lý'
+            WHEN (CAST(SUM(CASE 
+                WHEN rop.status = N'Đã chấp nhận'
+                THEN 1 
+                ELSE 0 
+            END) AS DECIMAL(5,2)) / 
+            SUM(CASE 
+                WHEN rop.status IN (N'Đã chấp nhận', N'Đã từ chối') 
+                THEN 1 
+                ELSE 0 
+            END) * 100) >= 70 THEN N'Rất tốt'
+            WHEN (CAST(SUM(CASE 
+                WHEN rop.status = N'Đã chấp nhận'
+                THEN 1 
+                ELSE 0 
+            END) AS DECIMAL(5,2)) / 
+            SUM(CASE 
+                WHEN rop.status IN (N'Đã chấp nhận', N'Đã từ chối') 
+                THEN 1 
+                ELSE 0 
+            END) * 100) >= 50 THEN N'Tốt'
+            WHEN (CAST(SUM(CASE 
+                WHEN rop.status = N'Đã chấp nhận'
+                THEN 1 
+                ELSE 0 
+            END) AS DECIMAL(5,2)) / 
+            SUM(CASE 
+                WHEN rop.status IN (N'Đã chấp nhận', N'Đã từ chối') 
+                THEN 1 
+                ELSE 0 
+            END) * 100) >= 30 THEN N'Trung bình'
+            WHEN SUM(CASE 
+                WHEN rop.status = N'Đã chấp nhận'
+                THEN 1 
+                ELSE 0 
+            END) > 0 THEN N'Cần cải thiện'
             ELSE N'Chưa có ứng tuyển thành công'
         END as Performance
     FROM Employee e
-    CROSS APPLY ApplicationStats stats
+    JOIN Record r ON e.id = r.ownerId
+    JOIN RecordOnRecruitmentPost rop ON r.id = rop.recordId
     WHERE @employeeId IS NULL OR e.id = @employeeId
+    GROUP BY 
+        e.id,
+        e.name,
+        r.id,
+        r.title
 );
 
 GO
--- Cách sử dụng:
--- SELECT * FROM dbo.CalculateApplicationSuccess(NULL);
 
+INSERT INTO [dbo].[Record] ([title], [description], [ownerId], [fileCvId])
+VALUES 
+(N'Hồ sơ DevOps Engineer', N'Hồ sơ ứng tuyển vị trí DevOps Engineer', 1, 1);
+INSERT INTO [dbo].[RecordOnRecruitmentPost] ([recordId], [recruitmentPostId], [job], [status])
+VALUES 
+(6, 2, N'React DevOps Engineer', N'Đã chấp nhận');
 -- Xem thống kê của ứng viên viên có ID = 1
 SELECT * FROM dbo.CalculateApplicationSuccess(1);
 

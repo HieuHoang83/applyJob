@@ -49,20 +49,6 @@ export class EmployeesController {
   }
 
   @Public()
-  @Get('education/search')
-  @ResponseMessage('Get Employee Education')
-  @UsePipes(new ValidationPipe({ 
-    transform: true,
-    whitelist: true,
-    forbidNonWhitelisted: true
-  }))
-  getEmployeeEducation(@Query() query: GetEmployeeEducationDto) {
-    return this.employeesService.getEmployeeEducation(query);
-    // GET /employees/education/search?minAge=25&gender=Nam&schoolName=Harvard
-  }
-
-
-  @Public()
   @Get(':id/application-stats')
   @ResponseMessage('Get Employee Application Statistics')
   getApplicationStats(@Param('id') id: string) {

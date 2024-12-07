@@ -23,7 +23,7 @@ CREATE PROCEDURE dbo.sp_CreateEmployee
     @email NVARCHAR(1000),
     @name NVARCHAR(1000),
     @gender NVARCHAR(1000),
-    @age INT,
+    @birthday DATETIME,
     @avatar NVARCHAR(1000),
     @password NVARCHAR(1000)
 AS
@@ -43,11 +43,11 @@ BEGIN
         THROW 50003, 'Số điện thoại không hợp lệ. Phải là 10 chữ số và bắt đầu bằng 0', 1;
     
     -- Validate age
-    IF @age IS NOT NULL AND @age < 16
+    IF @birthday IS NOT NULL AND DATEDIFF(YEAR, @birthday, GETDATE()) < 16
         THROW 50004, 'Ứng viên phải trên 16 tuổi', 1;
     
     -- Validate gender
-    IF @gender IS NOT NULL AND @gender NOT IN ('Nam', 'Nữ', 'Khác')
+    IF @gender IS NOT NULL AND @gender NOT IN ('Nam', N'Nữ', N'Khác')
         THROW 50005, 'Giới tính phải là Nam, Nữ, hoặc Khác', 1;
 
     -- Check if email already exists
@@ -55,11 +55,11 @@ BEGIN
         THROW 50006, 'Email đã tồn tại', 1;
 
     INSERT INTO dbo.Employee (
-        phone, address, email, name, gender, age, 
+        phone, address, email, name, gender, birthday, 
         avatar, password, provider, emailVerified, isBanned
     )
     VALUES (
-        @phone, @address, @email, @name, @gender, @age,
+        @phone, @address, @email, @name, @gender, @birthday,
         @avatar, @password, 'credentials', 0, 0
     );
 
@@ -75,7 +75,7 @@ CREATE PROCEDURE dbo.sp_UpdateEmployee
     @email NVARCHAR(1000) = NULL,
     @name NVARCHAR(1000) = NULL,
     @gender NVARCHAR(1000) = NULL,
-    @age INT = NULL,
+    @birthday DATETIME = NULL,
     @avatar NVARCHAR(1000) = NULL
 AS
 BEGIN
@@ -101,11 +101,11 @@ BEGIN
         THROW 50003, 'Số điện thoại không hợp lệ. Phải là 10 chữ số và bắt đầu bằng 0', 1;
 
     -- Validate age if provided
-    IF @age IS NOT NULL AND @age < 16
+    IF @birthday IS NOT NULL AND DATEDIFF(YEAR, @birthday, GETDATE()) < 16
         THROW 50004, 'Ứng viên phải trên 16 tuổi', 1;
 
     -- Validate gender if provided
-    IF @gender IS NOT NULL AND @gender NOT IN ('Nam', 'Nữ', 'Khác')
+    IF @gender IS NOT NULL AND @gender NOT IN ('Nam', N'Nữ', N'Khác')
         THROW 50005, 'Giới tính phải là Nam, Nữ, hoặc Khác', 1;
 
     UPDATE dbo.Employee
@@ -115,7 +115,7 @@ BEGIN
         email = ISNULL(@email, email),
         name = ISNULL(@name, name),
         gender = ISNULL(@gender, gender),
-        age = ISNULL(@age, age),
+        birthday = ISNULL(@birthday, birthday),
         avatar = ISNULL(@avatar, avatar),
         updatedAt = GETDATE()
     WHERE id = @id;
@@ -131,22 +131,18 @@ BEGIN
 
     -- Check if employee exists
     IF NOT EXISTS (SELECT 1 FROM dbo.Employee WHERE id = @id)
-        THROW 50007, 'Không tìm thấy ứng viên', 1;
+        THROW 50007, N'Không tìm thấy ứng viên', 1;
 
-    -- Check for related records
-    IF EXISTS (SELECT 1 FROM dbo.Education WHERE employeeId = @id)
-        THROW 50008, 'Không thể xóa ứng viên có bằng cấp tồn tại', 1;
+    -- Check if employee is already banned
+    IF EXISTS (SELECT 1 FROM dbo.Employee WHERE id = @id AND isBanned = 1)
+        THROW 50012, N'Ứng viên đã bị khóa tài khoản trước đó', 1;
 
-    IF EXISTS (SELECT 1 FROM dbo.Experience WHERE employeeId = @id)
-        THROW 50009, 'Không thể xóa ứng viên có kinh nghiệm tồn tại', 1;
-
-    IF EXISTS (SELECT 1 FROM dbo.Certificate WHERE employeeId = @id)
-        THROW 50010, 'Không thể xóa ứng viên có chứng chỉ tồn tại', 1;
-
-    IF EXISTS (SELECT 1 FROM dbo.Record WHERE ownerId = @id)
-        THROW 50011, 'Không thể xóa ứng viên có lịch sử tồn tại', 1;
-
-    DELETE FROM dbo.Employee WHERE id = @id;
+    -- Update isBanned status
+    UPDATE dbo.Employee
+    SET 
+        isBanned = 1,
+        updatedAt = GETDATE()
+    WHERE id = @id;
 END
 GO
 
@@ -157,7 +153,7 @@ EXEC dbo.sp_CreateEmployee
     @email = 'nhanvien@example.com',
     @name = N'Nguyễn Văn A',
     @gender = N'Nam',
-    @age = 25,
+    @birthday = '1995-01-01',
     @avatar = 'https://example.com/avatar.jpg',
     @password = 'hashedPassword123';
 
@@ -169,7 +165,7 @@ EXEC dbo.sp_UpdateEmployee
     @email = 'nhanvien.moi@example.com',
     @name = N'Nguyễn Văn A Updated',
     @gender = N'Nam',
-    @age = 26,
+    @birthday = '1995-01-01',
     @avatar = 'https://example.com/new-avatar.jpg';
 
 -- Ví dụ thực thi DELETE Employee

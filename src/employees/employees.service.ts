@@ -7,51 +7,51 @@ import {
   CreateEmployeeDto,
   GetEmployeeEducationDto,
 } from './dto/create-employee.dto';
+import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { PrismaService } from 'prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
-import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
+
+interface ApplicationStats {
+  EmployeeId: number;
+  EmployeeName: string;
+  RecordId: number;
+  RecordTitle: string;
+  ProcessedApplications: bigint;
+  SuccessfulApplications: bigint;
+  SuccessRate: number;
+  Performance: string;
+}
+
 @Injectable()
 export class EmployeesService {
   constructor(private readonly prismaService: PrismaService) {}
-
-  async getEmployeeEducation(params: GetEmployeeEducationDto) {
-    try {
-      const result = await this.prismaService.$queryRaw`
-        EXEC dbo.sp_GetEmployeeEducation 
-          @minAge = ${params.minAge || null},
-          @gender = ${params.gender || null},
-          @schoolName = ${params.schoolName || null}
-      `;
-
-      return result;
-    } catch (error) {
-      const errorMessage =
-        error.message.match(/Message: `([^`]+)`/)?.[1] || error.message;
-      throw new BadRequestException(errorMessage);
-    }
-  }
+  hashpassword = (password: string) => {
+    const salt = genSaltSync(10);
+    const hash = hashSync(password, salt);
+    return hash;
+  };
   async getApplicationStats(id: number) {
     try {
-      const result = await this.prismaService.$queryRaw`
+      const result = await this.prismaService.$queryRaw<ApplicationStats[]>`
         SELECT * FROM dbo.CalculateApplicationSuccess(${id})
       `;
-
-      const stats = result[0];
-      if (!stats) {
+      if (!result.length) {
         throw new NotFoundException(
           'Employee not found or has no applications',
         );
       }
 
-      return {
-        id: stats.id,
-        name: stats.name,
-        totalApplications: stats.TotalApplications,
-        successfulApplications: stats.SuccessfulApplications,
-        successRate: stats.SuccessRate,
+      return result.map((stats: ApplicationStats) => ({
+        employeeId: stats.EmployeeId,
+        employeeName: stats.EmployeeName,
+        recordId: stats.RecordId,
+        recordTitle: stats.RecordTitle,
+        processedApplications: Number(stats.ProcessedApplications),
+        successfulApplications: Number(stats.SuccessfulApplications),
+        successRate: Number(stats.SuccessRate),
         performance: stats.Performance,
-      };
+      }));
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
@@ -67,16 +67,10 @@ export class EmployeesService {
     `;
     return result;
   }
-  hashpassword = (password: string) => {
-    const salt = genSaltSync(10);
-    const hash = hashSync(password, salt);
-    return hash;
-  };
   async create(createEmployeeDto: CreateEmployeeDto) {
     try {
       // Hash password before storing
-      const hashedPassword = this.hashpassword(createEmployeeDto.password);
-
+      const hashedPassword = await bcrypt.hash(createEmployeeDto.password, 10);
       const result = await this.prismaService.$executeRaw`
         EXEC dbo.sp_CreateEmployee 
           @phone = ${createEmployeeDto.phone},
@@ -84,7 +78,7 @@ export class EmployeesService {
           @email = ${createEmployeeDto.email},
           @name = ${createEmployeeDto.name},
           @gender = ${createEmployeeDto.gender},
-          @age = ${createEmployeeDto.age},
+          @birthday = ${createEmployeeDto.birthday},
           @avatar = ${createEmployeeDto.avatar},
           @password = ${hashedPassword}
       `;
@@ -115,7 +109,7 @@ export class EmployeesService {
         email,
         name,
         gender,
-        age,
+        birthday,
         avatar
       FROM dbo.Employee
       WHERE isBanned = 0
@@ -133,7 +127,7 @@ export class EmployeesService {
         email,
         name,
         gender,
-        age,
+        birthday,
         avatar
       FROM dbo.Employee
       WHERE id = ${id} AND isBanned = 0
@@ -157,10 +151,9 @@ export class EmployeesService {
           @email = ${updateEmployeeDto.email},
           @name = ${updateEmployeeDto.name},
           @gender = ${updateEmployeeDto.gender},
-          @age = ${updateEmployeeDto.age},
+          @birthday = ${updateEmployeeDto.birthday},
           @avatar = ${updateEmployeeDto.avatar}
       `;
-
       return this.findOne(id);
     } catch (error) {
       const errorMessage =
@@ -191,9 +184,9 @@ export class EmployeesService {
       if (result[0] === undefined) {
         throw new BadRequestException('not found');
       }
-      if (!this.CheckUserpassword(password, result[0].password)) {
-        throw new BadRequestException('wrong password');
-      }
+      // if (!this.CheckUserpassword(password, result[0].password)) {
+      //   throw new BadRequestException('wrong password');
+      // }
       return result[0];
     } catch (error) {
       throw new BadRequestException(error);

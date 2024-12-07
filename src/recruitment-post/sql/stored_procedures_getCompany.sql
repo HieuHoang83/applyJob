@@ -17,7 +17,7 @@ BEGIN
         LEFT JOIN [dbo].[RecordOnRecruitmentPost] rop ON rp.id = rop.recruitmentPostId
         LEFT JOIN [dbo].[Evaluation] e ON rp.id = e.recruitmentPostId
     WHERE 
-        (@industry IS NULL OR c.industry = @industry)
+        (@industry IS NULL OR c.industry LIKE N'%' + @industry + N'%')
     GROUP BY 
         c.name,
         c.industry

@@ -20,13 +20,12 @@ export class CreateEmployeeDto {
   name: string;
 
   @IsOptional()
-  @IsEnum(Gender)
+  // @IsEnum(Gender)
   gender: string;
 
   @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  age: number;
+  @Type(() => Date)
+  birthday: Date;
 
   @IsOptional()
   @IsString()
