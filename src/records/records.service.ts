@@ -104,6 +104,19 @@ export class RecordsService {
     return record[0];
   }
 
+  async findEmployee(id: number) {
+    const record = await this.prismaService.$queryRaw`
+      SELECT * FROM [dbo].[Record]
+      WHERE [ownerId] = ${id};
+    `;
+
+    if (!record) {
+      throw new NotFoundException('Record not found');
+    }
+
+    return record;
+  }
+
   async update(id: number, updateRecordDto: UpdateRecordDto) {
     const record = await this.findOne(id);
     
@@ -168,6 +181,50 @@ export class RecordsService {
     return await this.prismaService.$executeRaw`
       INSERT INTO [dbo].[EducationOnRecord] (educationId, recordId)
       VALUES (${educationId}, ${recordId})
+    `;
+  }
+
+  async getAllExperienceOnRecord(recordId: number) {
+    return await this.prismaService.$queryRaw`
+    SELECT e.[id],
+           e.[company],
+           e.[position],
+           e.[description],
+           e.[url],
+           e.[image],
+           e.[startDate],
+           e.[endDate]
+    FROM [dbo].[ExperienceOnRecord] er
+    INNER JOIN [dbo].[Experience] e ON er.experienceId = e.id
+    WHERE er.recordId = ${recordId};
+    `;
+  }
+
+  async getAllCertificateOnRecord(recordId: number) {
+    return await this.prismaService.$queryRaw`
+    SELECT e.[id],
+           e.[name],
+           e.[organization],
+           e.[url],
+           e.[image],
+           e.[verifiedDate]
+    FROM [dbo].[CertificateOnRecord] er
+    INNER JOIN [dbo].[Certificate] e ON er.certificateId = e.id
+    WHERE er.recordId = ${recordId};
+    `;
+  }
+
+  async getAllEducationOnRecord(recordId: number) {
+    return await this.prismaService.$queryRaw`
+    SELECT e.[id],
+           e.[school],
+           e.[major],
+           e.[description],
+           e.[startDate],
+           e.[endDate]
+    FROM [dbo].[EducationOnRecord] er
+    INNER JOIN [dbo].[Education] e ON er.educationId = e.id
+    WHERE er.recordId = ${recordId};
     `;
   }
 

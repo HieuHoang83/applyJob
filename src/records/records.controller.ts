@@ -47,6 +47,13 @@ export class RecordsController {
   }
 
   @Public()
+  @Get('employee/:id')
+  @ResponseMessage('Record found successfully')
+  findMany(@Param('id') id: string) {
+    return this.recordsService.findEmployee(+id);
+  }
+
+  @Public()
   @Patch(':id')
   @ResponseMessage('Record updated successfully')
   update(
@@ -74,6 +81,15 @@ export class RecordsController {
   }
 
   @Public()
+  @Get(':recordId/experiences')
+  @ResponseMessage('Get experience from record successfully')
+  getAllExperienceOnRecord(
+    @Param('recordId') recordId: string,
+  ) {
+    return this.recordsService.getAllExperienceOnRecord(+recordId);
+  }
+
+  @Public()
   @Delete(':recordId/experiences/:experienceId')
   @ResponseMessage('Experience removed from record successfully')
   removeExperienceFromRecord(
@@ -94,6 +110,15 @@ export class RecordsController {
   }
 
   @Public()
+  @Get(':recordId/educations')
+  @ResponseMessage('Get experience from record successfully')
+  getAllEducationOnRecord(
+    @Param('recordId') recordId: string,
+  ) {
+    return this.recordsService.getAllEducationOnRecord(+recordId);
+  }
+
+  @Public()
   @Delete(':recordId/educations/:educationId')
   @ResponseMessage('Education removed from record successfully')
   removeEducationFromRecord(
@@ -111,6 +136,15 @@ export class RecordsController {
     @Param('certificateId') certificateId: string
   ) {
     return this.recordsService.addCertificateToRecord(+recordId, +certificateId);
+  }
+
+  @Public()
+  @Get(':recordId/certificates')
+  @ResponseMessage('Get experience from record successfully')
+  getAllCertificateOnRecord(
+    @Param('recordId') recordId: string,
+  ) {
+    return this.recordsService.getAllCertificateOnRecord(+recordId);
   }
 
   @Public()

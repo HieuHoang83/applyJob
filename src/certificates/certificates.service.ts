@@ -108,6 +108,19 @@ export class CertificatesService {
     return certificate[0];
   }
 
+  async findEmployee(id: number) {
+    const certificate = await this.prismaService.$queryRaw`
+      SELECT * FROM [dbo].[Certificate]
+      WHERE [employeeId] = ${id};
+    `;
+
+    if (!certificate) {
+      throw new NotFoundException('Certificate not found');
+    }
+
+    return certificate;
+  }
+
   async update(id: number, updateCertificateDto: UpdateCertificateDto) {
     const certificate = await this.findOne(id);
     
