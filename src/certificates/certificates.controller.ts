@@ -27,6 +27,14 @@ export class CertificatesController {
   }
 
   @Public()
+  @Get('employee/:id')
+  @UseGuards(CheckValidId)
+  @ResponseMessage('Certificates found successfully')
+  findMany(@Param('id') id: string) {
+    return this.certificatesService.findEmployee(+id);
+  }
+
+  @Public()
   @Get(':id')
   @UseGuards(CheckValidId)
   @ResponseMessage('Certificate found successfully')

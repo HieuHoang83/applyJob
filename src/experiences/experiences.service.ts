@@ -54,6 +54,19 @@ export class ExperiencesService {
     return experience[0];
   }
 
+  async findEmployee(id: number) {
+    const experience = await this.prismaService.$queryRaw`
+      SELECT * FROM [dbo].[Experience]
+      WHERE [employeeId] = ${id};
+    `;
+
+    if (!experience) {
+      throw new NotFoundException('Experience not found');
+    }
+
+    return experience;
+  }
+
   async update(id: number, updateExperienceDto: UpdateExperienceDto) {
     const experience = await this.findOne(id);
     

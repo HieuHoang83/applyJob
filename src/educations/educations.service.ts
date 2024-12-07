@@ -50,6 +50,19 @@ export class EducationsService {
     return education[0];
   }
 
+  async findEmployee(id: number) {
+    const education = await this.prismaService.$queryRaw`
+      SELECT * FROM [dbo].[Education]
+      WHERE [employeeId] = ${id};
+    `;
+
+    if (!education) {
+      throw new NotFoundException('Education not found');
+    }
+
+    return education;
+  }
+
   async update(id: number, updateEducationDto: UpdateEducationDto) {
     const education = await this.findOne(id);
     

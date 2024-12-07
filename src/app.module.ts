@@ -21,7 +21,7 @@ import { RecruitmentPostModule } from './recruitment-post/recruitment-post.modul
 import { PositionModule } from './position/position.module';
 import { RecruitmentPostPositionModule } from './recruitment-post-position/recruitment-post-position.module';
 import { JobDescriptionModule } from './job-description/job-description.module';
-import { ExperiencesModule } from 'experiences/experiences.module';
+import { ExperiencesModule } from './experiences/experiences.module';
 import { RecordsOnPostModule } from './record-on-recruitment-post/record-on-recruitment-post.module';
 @Module({
   imports: [

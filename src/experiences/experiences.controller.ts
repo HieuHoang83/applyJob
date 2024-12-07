@@ -41,6 +41,14 @@ export class ExperiencesController {
   }
 
   @Public()
+  @Get('employee/:id')
+  @ResponseMessage('Get a experience successfully!')
+  @UseGuards(CheckValidId)
+  findMany(@Param('id') id: string) {
+    return this.experiencesService.findEmployee(+id);
+  }
+
+  @Public()
   @Patch(':id')
   @ResponseMessage('Update a experience successfully!')
   @UseGuards(CheckValidId)
