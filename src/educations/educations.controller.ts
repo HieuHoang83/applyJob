@@ -34,6 +34,14 @@ export class EducationsController {
   }
 
   @Public()
+  @Get('employee/:id')
+  @UseGuards(CheckValidId)
+  @ResponseMessage('Get a education successfully!')
+  findMany(@Param('id') id: string) {
+    return this.educationsService.findEmployee(+id);
+  }
+
+  @Public()
   @Patch(':id')
   @UseGuards(CheckValidId)
   @ResponseMessage('Update a education successfully!')
