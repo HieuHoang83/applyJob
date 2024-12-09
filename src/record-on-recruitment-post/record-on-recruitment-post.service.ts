@@ -99,12 +99,14 @@ export class RecordsOnPostService {
     // Truy vấn dữ liệu phân trang
     const result = await this.prismaService.$queryRaw`
       SELECT 
-        ror.*, 
+        ror.createdAt as appliedDate,
+        ror.status as applicationStatus,
+        ror.recruitmentPostId as recruitmentPostId,
         rp.title,
-        e.name AS employerName,
-        e.email AS employerEmail,
-        e.phone AS employerPhone,
-        e.avatar AS employerAvatar
+        ror.recordId as recordId,
+        e.id as employeeId,
+        e.name AS employeeName,
+        e.email AS employeeEmail
       FROM [dbo].[RecordOnRecruitmentPost] ror
       INNER JOIN [dbo].[RecruitmentPost] rp ON rp.id = ror.recruitmentPostId
       INNER JOIN [dbo].[Employee] e ON e.id = rp.employerId

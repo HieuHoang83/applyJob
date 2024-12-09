@@ -11,7 +11,7 @@ import {
 import { RecruitmentPostService } from './recruitment-post.service';
 import { CreateRecruitmentPostDto } from './dto/create-recruitment-post.dto';
 import { UpdateRecruitmentPostDto } from './dto/update-recruitment-post.dto';
-import { Public } from 'src/decorators/customize';
+import { Public, ResponseMessage } from 'src/decorators/customize';
 import { ApiQuery } from '@nestjs/swagger';
 
 @Controller('recruitment-post')
@@ -72,6 +72,12 @@ export class RecruitmentPostController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.recruitmentPostService.remove(+id);
+  }
+  @Public()
+  @Get('/getByCompanyName/:name')
+  @ResponseMessage('Get Company by ID')
+  findOneByName(@Param('name') name: string) {
+    return this.recruitmentPostService.findCompanyPosts(name);
   }
 
   @Public()

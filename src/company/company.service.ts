@@ -58,7 +58,18 @@ export class CompanyService {
       );
     }
   }
-
+  async findOneByName(name: string) {
+    try {
+      const company = await this.prismaService.$queryRaw`
+        SELECT id FROM Company WHERE name = ${name};
+      `;
+      return company[0] || null; // Vì query trả về mảng, nên lấy phần tử đầu tiên
+    } catch (error) {
+      throw new BadRequestException(
+        `Failed to find company with id ${name}: ${error.message}`,
+      );
+    }
+  }
   async update(id: number, updateCompanyDto: UpdateCompanyDto) {
     try {
       const fieldsToUpdate = [];

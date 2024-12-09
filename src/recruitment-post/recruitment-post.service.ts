@@ -2,10 +2,14 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateRecruitmentPostDto } from './dto/create-recruitment-post.dto';
 import { UpdateRecruitmentPostDto } from './dto/update-recruitment-post.dto';
 import { PrismaService } from 'prisma/prisma.service';
-
+import { EmployersService } from 'src/employers/employers.service';
+import { Prisma } from '@prisma/client';
 @Injectable()
 export class RecruitmentPostService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private employersService: EmployersService,
+  ) {}
   async create(data: CreateRecruitmentPostDto) {
     const recruitmentPost = await this.prismaService.$queryRaw`
   INSERT INTO RecruitmentPost (title, description, employerId, datePosted, deadline)
@@ -132,6 +136,42 @@ export class RecruitmentPostService {
     return recruitmentPost;
   }
 
+  async findCompanyPosts(companyName: string) {
+    let x: any = await this.employersService.findByCompanyName(companyName);
+
+    if (x.length > 0) {
+      // Lấy danh sách ID từ kết quả
+      const listId = x.map((item) => item.id);
+
+      // Lấy ngày hiện tại
+      const CURRENT_DATE = new Date().toISOString();
+
+      // Truy vấn an toàn với Prisma
+      const recruitmentPost = await this.prismaService.$queryRaw`
+    SELECT rp.id,
+           rp.title as jobTitle,
+           rp.description,
+           rp.datePosted,
+           rp.deadline,
+           jd.location,
+           jd.experience,
+           jd.level,
+           jd.salary,
+           jd.quantity,
+           jd.employmentType,
+           jd.gender 
+    FROM "RecruitmentPost" rp  
+    LEFT JOIN "JobDescription" jd ON rp.id = jd."recruitmentPostId"
+    WHERE rp.id IN (${Prisma.join(listId)}) 
+    AND rp.datePosted < ${CURRENT_DATE}
+    -- AND rp.deadline > ${CURRENT_DATE} -- Uncomment nếu cần kiểm tra thêm deadline
+  `;
+
+      return recruitmentPost;
+    }
+
+    return [];
+  }
   async update(id: number, data: UpdateRecruitmentPostDto) {
     // Start with the base query
     try {

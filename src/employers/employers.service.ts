@@ -49,6 +49,34 @@ export class EmployersService {
     }
   }
 
+  async findByIdCompany(companyId: string) {
+    try {
+      const result = await this.prismaService.$queryRaw`
+        SELECT * FROM Employer WHERE companyId = ${companyId}`;
+      if (result[0] === undefined) {
+        throw new BadRequestException('Employer not found');
+      }
+
+      return result[0];
+    } catch (error) {
+      throw new BadRequestException('Error fetching all employers:');
+    }
+  }
+  async findByCompanyName(companyName: string) {
+    let companyId = await this.companyService.findOneByName(companyName);
+
+    try {
+      const result = await this.prismaService.$queryRaw`
+        SELECT id FROM Employer WHERE companyId = ${companyId.id}`;
+      if (result[0] === undefined) {
+        throw new BadRequestException('Employer not found');
+      }
+
+      return result;
+    } catch (error) {
+      throw new BadRequestException('Error fetching all employers:');
+    }
+  }
   // Lấy một Employer theo ID
   async findOne(id: number) {
     try {

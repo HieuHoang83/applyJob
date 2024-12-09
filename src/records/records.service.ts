@@ -6,10 +6,14 @@ import { IUser } from 'src/interface/users.interface';
 import { RecordStatus } from 'utils/constant';
 import { PaginateInfo } from 'src/interface/paginate.interface';
 import { Prisma } from '@prisma/client';
+import { EmployeesService } from 'src/employees/employees.service';
 
 @Injectable()
 export class RecordsService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private employeeService: EmployeesService,
+  ) {}
   async create(createRecordDto: CreateRecordDto) {
     const result = await this.prismaService.$queryRaw`
       INSERT INTO [dbo].[Record] (
@@ -42,13 +46,22 @@ export class RecordsService {
     } = paginateInfo;
 
     // Validate sort để tránh SQL injection
-    const validSortColumns = ['id', 'title', 'description', 'ownerId', 'fileCvId'];
+    const validSortColumns = [
+      'id',
+      'title',
+      'description',
+      'ownerId',
+      'fileCvId',
+    ];
     const validSortOrders = ['ASC', 'DESC'];
-    
+
     let safeSort = '[id] DESC';
     if (sort) {
       const [column, order] = sort.replace(/[\[\]]/g, '').split(' ');
-      if (validSortColumns.includes(column) && validSortOrders.includes(order)) {
+      if (
+        validSortColumns.includes(column) &&
+        validSortOrders.includes(order)
+      ) {
         safeSort = `[${column}] ${order}`;
       }
     }
@@ -105,21 +118,27 @@ export class RecordsService {
   }
 
   async findEmployee(id: number) {
-    const record = await this.prismaService.$queryRaw`
+    const record: [] = await this.prismaService.$queryRaw`
       SELECT * FROM [dbo].[Record]
       WHERE [ownerId] = ${id};
     `;
 
-    if (!record) {
-      throw new NotFoundException('Record not found');
+    if (record.length > 0) {
+      let result = [];
+      for (let i = 0; i < record.length; i++) {
+        //@ts-ignore
+        let id = record[i]?.id; // Lấy ID của từng bản ghi
+        result[i] = await this.employeeService.getApplicationStats(id);
+      }
+      return result;
     }
 
-    return record;
+    throw new NotFoundException('Record not found');
   }
 
   async update(id: number, updateRecordDto: UpdateRecordDto) {
     const record = await this.findOne(id);
-    
+
     if (!record) {
       throw new NotFoundException('Record not found');
     }
@@ -141,7 +160,7 @@ export class RecordsService {
 
   async remove(id: number) {
     const record = await this.findOne(id);
-    
+
     if (!record) {
       throw new NotFoundException('Record not found');
     }

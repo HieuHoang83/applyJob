@@ -44,6 +44,7 @@ export class AuthService {
 
   async login(userLoginDto: UserLoginDto, response: Response) {
     const { username, password, type } = userLoginDto;
+    password;
     let user: any;
     if (type == 'Admin') {
       user = await this.adminsService.login(username, password);
