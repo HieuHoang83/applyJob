@@ -23,8 +23,6 @@ export class RecordsOnPostController {
   @Public()
   @Patch()
   update(@Body() updateRecordOnPostDto: any) {
-    console.log(updateRecordOnPostDto);
-    return updateRecordOnPostDto;
     return this.recordsOnPostService.update(updateRecordOnPostDto);
   }
   @Public()
