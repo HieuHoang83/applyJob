@@ -173,33 +173,43 @@ export class RecruitmentPostService {
     return [];
   }
   async update(id: number, data: UpdateRecruitmentPostDto) {
-    // Start with the base query
     try {
       const fieldsToUpdate = [];
+      const params = [];
 
       if (data.title) {
-        fieldsToUpdate.push(`title = '${data.title}'`);
+        fieldsToUpdate.push(`title = $1`);
+        params.push(data.title);
       }
       if (data.description) {
-        fieldsToUpdate.push(`description = '${data.description}'`);
+        fieldsToUpdate.push(`description = $2`);
+        params.push(data.description);
       }
-
       if (data.deadline) {
-        fieldsToUpdate.push(`deadline = '${data.deadline}'`);
+        // Ensure the deadline is in the correct format
+        const deadline = new Date(data.deadline).toISOString();
+        fieldsToUpdate.push(`deadline = $3`);
+        params.push(deadline);
       }
-      const date = new Date().toISOString(); // Get current date in ISO format
-      fieldsToUpdate.push(`updatedAt = '${date}'`);
-      const updateQuery = `
-        UPDATE RecruitmentPost
-        SET ${fieldsToUpdate.join(', ')}
-        WHERE id = ${id};
-      `;
 
-      await this.prismaService.$executeRawUnsafe(updateQuery);
+      const date = new Date().toISOString();
+      fieldsToUpdate.push(`updatedAt = $4`);
+      params.push(date);
+
+      const updateQuery = `
+      UPDATE RecruitmentPost
+      SET ${fieldsToUpdate.join(', ')}
+      WHERE id = $5;
+    `;
+
+      // Add the id as the last parameter
+      params.push(id);
+
+      await this.prismaService.$executeRawUnsafe(updateQuery, ...params);
       return { message: `RecruitmentPost with id ${id} updated successfully.` };
     } catch (error) {
       throw new BadRequestException(
-        `Failed to update company with id ${id}: ${error.message}`,
+        `Failed to update RecruitmentPost with id ${id}: ${error.message}`,
       );
     }
   }
