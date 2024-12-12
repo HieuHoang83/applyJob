@@ -148,7 +148,7 @@ export class RecruitmentPostService {
 
       // Truy vấn an toàn với Prisma
       const recruitmentPost = await this.prismaService.$queryRaw`
-    SELECT rp.id,
+    SELECT rp.id as postId,
            rp.title as jobTitle,
            rp.description,
            rp.datePosted,
