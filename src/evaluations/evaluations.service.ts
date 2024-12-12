@@ -104,12 +104,16 @@ export class EvaluationsService {
     });
   }
 
-  async findByRecruitmentPostId(recruitmentPostId: number) {
-    return await this.prismaService.evaluation.findMany({
-      where: {
-        recruitmentPostId: recruitmentPostId,
-      },
-    });
+  async findByRecruitmentPostId(postId: number, employeeId: number) {
+    const result: any = await this.prismaService.$queryRaw`
+      SELECT *
+      FROM "Evaluation"
+      WHERE "recruitmentPostId" = ${postId} AND "employeeId" = ${employeeId}
+    `;
+    if (result.length > 0) {
+      return result[0];
+    }
+    throw new NotFoundException('Evaluation not found');
   }
 
   async update(id: number, updateEvaluationDto: UpdateEvaluationDto) {

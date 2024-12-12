@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { EvaluationsService } from './evaluations.service';
 import { CreateEvaluationDto } from './dto/create-evaluation.dto';
 import { UpdateEvaluationDto } from './dto/update-evaluation.dto';
@@ -22,9 +31,7 @@ export class EvaluationsController {
   @Public()
   @Get()
   @ResponseMessage('Get all evaluations successfully!')
-  findAll(
-    @GetPaginateInfo() paginateInfo: PaginateInfo
-  ) {
+  findAll(@GetPaginateInfo() paginateInfo: PaginateInfo) {
     return this.evaluationsService.findAll(paginateInfo);
   }
 
@@ -45,18 +52,26 @@ export class EvaluationsController {
   }
 
   @Public()
-  @Get('post/:id')
-  @UseGuards(CheckValidId)
+  @Get('employee/:employeeId/post/:postId')
   @ResponseMessage('Get evaluation by recruitment post id successfully!')
-  findByRecruitmentPostId(@Param('id') id: string) {
-    return this.evaluationsService.findByRecruitmentPostId(+id);
+  findByRecruitmentPostId(
+    @Param('postId') postId: string,
+    @Param('employeeId') employeeId: string,
+  ) {
+    return this.evaluationsService.findByRecruitmentPostId(
+      +postId,
+      +employeeId,
+    );
   }
 
   @Public()
   @Patch(':id')
   @UseGuards(CheckValidId)
   @ResponseMessage('Update evaluation by id successfully!')
-  update(@Param('id') id: string, @Body() updateEvaluationDto: UpdateEvaluationDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateEvaluationDto: UpdateEvaluationDto,
+  ) {
     return this.evaluationsService.update(+id, updateEvaluationDto);
   }
 
