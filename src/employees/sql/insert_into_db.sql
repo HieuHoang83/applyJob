@@ -208,16 +208,16 @@ VALUES
 INSERT INTO [dbo].[JobDescription]
      ([location], [level], [experience], [salary], [quantity], [employmentType], [gender], [recruitmentPostId])
 VALUES
-     (N'Đà Nẵng', N'Senior', N'5 năm', N'2000-3000 USD', 2, N'Full-time', N'Not required', 1),
-     (N'Hà Nội', N'Middle', N'3 năm', N'1500-2500 USD', 3, N'Full-time', N'Not required', 2),
-     (N'TP.HCM', N'Senior', N'4 năm', N'2500-3500 USD', 1, N'Full-time', N'Not required', 3),
-     (N'Đà Nẵng', N'Middle', N'2 năm', N'1000-2000 USD', 4, N'Full-time', N'Not required', 4),
-     (N'Hà Nội', N'Senior', N'5 năm', N'2000-3000 USD', 2, N'Full-time', N'Not required', 5),
-     (N'TP.HCM', N'Senior', N'5 năm', N'3000-4500 USD', 3, N'Full-time', N'Not required', 6),
-     (N'TP.HCM', N'Middle', N'3 năm', N'2000-3000 USD', 2, N'Full-time', N'Not required', 7),
-     (N'Hà Nội', N'Senior', N'5 năm', N'2500-3500 USD', 1, N'Full-time', N'Not required', 8),
-     (N'TP.HCM', N'Middle', N'3 năm', N'1500-2500 USD', 2, N'Full-time', N'Not required', 9),
-     (N'Hà Nội', N'Senior', N'4 năm', N'2000-3000 USD', 3, N'Full-time', N'Not required', 10);
+     (N'Đà Nẵng', N'Senior', N'5 năm', N'2000', 2, N'Full-time', N'Not required', 1),
+     (N'Hà Nội', N'Middle', N'3 năm', N'1500', 3, N'Full-time', N'Not required', 2),
+     (N'TP.HCM', N'Senior', N'4 năm', N'2500', 1, N'Full-time', N'Not required', 3),
+     (N'Đà Nẵng', N'Middle', N'2 năm', N'1000', 4, N'Full-time', N'Not required', 4),
+     (N'Hà Nội', N'Senior', N'5 năm', N'2000', 2, N'Full-time', N'Not required', 5),
+     (N'TP.HCM', N'Senior', N'5 năm', N'3000', 3, N'Full-time', N'Not required', 6),
+     (N'TP.HCM', N'Middle', N'3 năm', N'2000', 2, N'Full-time', N'Not required', 7),
+     (N'Hà Nội', N'Senior', N'5 năm', N'2500', 1, N'Full-time', N'Not required', 8),
+     (N'TP.HCM', N'Middle', N'3 năm', N'1500', 2, N'Full-time', N'Not required', 9),
+     (N'Hà Nội', N'Senior', N'4 năm', N'2000', 3, N'Full-time', N'Not required', 10);
 
 -- Thêm File (CV)
 INSERT INTO [dbo].[File]
