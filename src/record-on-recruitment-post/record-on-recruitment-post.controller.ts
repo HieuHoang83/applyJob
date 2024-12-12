@@ -21,11 +21,23 @@ import { ApiTags } from '@nestjs/swagger';
 export class RecordsOnPostController {
   constructor(private readonly recordsOnPostService: RecordsOnPostService) {}
   @Public()
+  @Patch()
+  update(@Body() updateRecordOnPostDto: any) {
+    console.log(updateRecordOnPostDto);
+    return updateRecordOnPostDto;
+    return this.recordsOnPostService.update(updateRecordOnPostDto);
+  }
+  @Public()
   @Post()
   create(@Body() createRecordOnPostDto: CreateRecordOnPostDto) {
     return this.recordsOnPostService.create(createRecordOnPostDto);
   }
-
+  @Public()
+  @Delete('/record/:record/post/:post')
+  remove(@Param('record') record: number, @Param('post') post: number) {
+    // return 'ok';
+    return this.recordsOnPostService.remove(record, post);
+  }
   @Public()
   @Get()
   findAll(@GetPaginateInfo() paginateInfo: PaginateInfo) {
@@ -36,7 +48,7 @@ export class RecordsOnPostController {
   async findMany(
     @Query('page') page: string = '1', // Tham số 'page', mặc định là '1'
     @Query('pageSize') pageSize: string = '10', // Tham số 'pageSize', mặc định là '5'
-    @Param('post') post: string,  
+    @Param('post') post: string,
   ) {
     const pageNumber = parseInt(page, 10); // Chuyển đổi sang số nguyên
     const size = parseInt(pageSize, 10); // Chuyển đổi sang số nguyên
@@ -50,17 +62,5 @@ export class RecordsOnPostController {
       success: true,
       ...result, // Gộp kết quả từ findPaginatedPosts
     };
-  }
-
-  @Public()
-  @Patch()
-  update(@Body() updateRecordOnPostDto: UpdateRecordOnPostDto) {
-    return this.recordsOnPostService.update(updateRecordOnPostDto);
-  }
-
-  @Public()
-  @Delete('/record/:record/post/:post')
-  remove(@Param('record') record: number, @Param('post') post: number) {
-    return this.recordsOnPostService.remove(record, post);
   }
 }

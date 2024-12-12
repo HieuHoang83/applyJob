@@ -20,7 +20,7 @@ export class RecordsOnPostService {
         ${createRecordOnPostDto.recordId},
         ${createRecordOnPostDto.recruitmentPostId},
         ${createRecordOnPostDto.job},
-        ${RecordStatus.PENDING}
+        ${'Đang chờ xét duyệt'}
       );
 
       SELECT * FROM [dbo].[RecordOnRecruitmentPost]

@@ -1,4 +1,8 @@
-import { NotFoundException, BadRequestException, Injectable } from '@nestjs/common';
+import {
+  NotFoundException,
+  BadRequestException,
+  Injectable,
+} from '@nestjs/common';
 import { CreateEvaluationDto } from './dto/create-evaluation.dto';
 import { UpdateEvaluationDto } from './dto/update-evaluation.dto';
 import { PrismaService } from 'prisma/prisma.service';
@@ -7,22 +11,39 @@ import { PaginateInfo } from 'src/interface/paginate.interface';
 @Injectable()
 export class EvaluationsService {
   constructor(private readonly prismaService: PrismaService) {}
+
   async create(createEvaluationDto: CreateEvaluationDto) {
     try {
-    const evaluation = await this.prismaService.$queryRaw`
-    INSERT INTO Evaluation (rating, saved, employeeId, recruitmentPostId)
-    
-    VALUES (
-    ${createEvaluationDto.rating}, 
-    ${createEvaluationDto.saved}, 
-    ${createEvaluationDto.employeeId},
-    ${createEvaluationDto.recruitmentPostId})
-    
-    SELECT * FROM [dbo].[Evaluation]
-      WHERE [id] = SCOPE_IDENTITY();
-    `
-    ;
-      return evaluation[0];
+      // Thực hiện MERGE để upsert
+      await this.prismaService.$executeRaw`
+            MERGE INTO Evaluation AS target
+            USING (SELECT ${createEvaluationDto.employeeId} AS employeeId, 
+                          ${createEvaluationDto.recruitmentPostId} AS recruitmentPostId) AS source
+            ON target.employeeId = source.employeeId 
+               AND target.recruitmentPostId = source.recruitmentPostId
+            WHEN MATCHED THEN 
+                UPDATE SET 
+                    target.rating = ${createEvaluationDto.rating},
+                    target.saved = ${createEvaluationDto.saved}
+            WHEN NOT MATCHED THEN 
+                INSERT (rating, saved, employeeId, recruitmentPostId)
+                VALUES (
+                    ${createEvaluationDto.rating}, 
+                    ${createEvaluationDto.saved}, 
+                    ${createEvaluationDto.employeeId}, 
+                    ${createEvaluationDto.recruitmentPostId}
+                );
+        `;
+
+      // Lấy bản ghi đã chèn hoặc cập nhật
+      const evaluation = await this.prismaService.evaluation.findFirst({
+        where: {
+          employeeId: createEvaluationDto.employeeId,
+          recruitmentPostId: createEvaluationDto.recruitmentPostId,
+        },
+      });
+
+      return evaluation; // Trả về bản ghi
     } catch (error) {
       throw new BadRequestException(error.meta.message);
     }
@@ -93,7 +114,7 @@ export class EvaluationsService {
 
   async update(id: number, updateEvaluationDto: UpdateEvaluationDto) {
     const evaluation = await this.findOne(id);
-    
+
     if (!evaluation) {
       throw new NotFoundException('Evaluation not found');
     }
@@ -115,7 +136,7 @@ export class EvaluationsService {
 
   async remove(id: number) {
     const evaluation = await this.findOne(id);
-    
+
     if (!evaluation) {
       throw new NotFoundException('Evaluation not found');
     }

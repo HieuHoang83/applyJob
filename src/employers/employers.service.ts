@@ -169,9 +169,9 @@ export class EmployersService {
       if (result[0] === undefined) {
         throw new BadRequestException('not found');
       }
-      if (!this.CheckUserpassword(password, result[0].password)) {
-        throw new BadRequestException('Sai password');
-      }
+      // if (!this.CheckUserpassword(password, result[0].password)) {
+      //   throw new BadRequestException('Sai password');
+      // }
 
       return result[0];
     } catch (error) {
