@@ -28,7 +28,7 @@ export class JobDescriptionService {
 
   async findOne(id: number) {
     const jobDescription = await this.prismaService.$queryRaw`
-      SELECT * FROM JobDescription WHERE id = ${id};
+       SELECT * FROM JobDescription WHERE recruitmentPostId = ${id};
     `;
     return jobDescription;
   }

@@ -212,9 +212,7 @@ export class RecruitmentPostService {
       // Thực thi câu truy vấn
       await this.prismaService.$executeRawUnsafe(updateQuery);
 
-      return {
-        message: `RecruitmentPost với id ${id} được cập nhật thành công.`,
-      };
+      return this.findOne(id);
     } catch (error) {
       throw new BadRequestException(
         `Không thể cập nhật RecruitmentPost với id ${id}: ${error.message}`,
