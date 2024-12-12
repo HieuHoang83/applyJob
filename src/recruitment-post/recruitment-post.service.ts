@@ -129,7 +129,7 @@ export class RecruitmentPostService {
   FROM "RecruitmentPost" rp
   LEFT JOIN "JobDescription" jd ON rp.id = jd."recruitmentPostId"
   WHERE rp.id = ${id}  
- 
+    
  
 `;
 
@@ -162,9 +162,9 @@ export class RecruitmentPostService {
            jd.gender 
     FROM "RecruitmentPost" rp  
     LEFT JOIN "JobDescription" jd ON rp.id = jd."recruitmentPostId"
-    WHERE rp.id IN (${Prisma.join(listId)}) 
-    AND rp.datePosted < ${CURRENT_DATE}
-    -- AND rp.deadline > ${CURRENT_DATE} -- Uncomment nếu cần kiểm tra thêm deadline
+    WHERE rp.employerId IN (${Prisma.join(listId)}) 
+    --  AND rp.datePosted < ${CURRENT_DATE}
+    --  AND rp.deadline > ${CURRENT_DATE} -- Uncomment nếu cần kiểm tra thêm deadline
   `;
 
       return recruitmentPost;
@@ -174,42 +174,50 @@ export class RecruitmentPostService {
   }
   async update(id: number, data: UpdateRecruitmentPostDto) {
     try {
-      const fieldsToUpdate = [];
-      const params = [];
+      // Tạo mảng lưu các trường cần cập nhật và giá trị tương ứng
+      const fieldsToUpdate: string[] = [];
 
+      // Tạo câu truy vấn update dựa trên dữ liệu đầu vào
       if (data.title) {
-        fieldsToUpdate.push(`title = $1`);
-        params.push(data.title);
+        fieldsToUpdate.push(`title = N'${data.title.replace(/'/g, "''")}'`);
       }
       if (data.description) {
-        fieldsToUpdate.push(`description = $2`);
-        params.push(data.description);
+        fieldsToUpdate.push(
+          `description = N'${data.description.replace(/'/g, "''")}'`,
+        );
       }
       if (data.deadline) {
-        // Ensure the deadline is in the correct format
         const deadline = new Date(data.deadline).toISOString();
-        fieldsToUpdate.push(`deadline = $3`);
-        params.push(deadline);
+        fieldsToUpdate.push(`deadline = '${deadline}'`);
       }
 
-      const date = new Date().toISOString();
-      fieldsToUpdate.push(`updatedAt = $4`);
-      params.push(date);
+      // Thêm updatedAt với giá trị thời gian hiện tại
+      const updatedAt = new Date().toISOString();
+      fieldsToUpdate.push(`updatedAt = '${updatedAt}'`);
 
+      if (fieldsToUpdate.length === 0) {
+        throw new BadRequestException('Không có trường nào để cập nhật.');
+      }
+
+      // Tạo câu truy vấn SQL cuối cùng
       const updateQuery = `
-      UPDATE RecruitmentPost
-      SET ${fieldsToUpdate.join(', ')}
-      WHERE id = $5;
-    `;
+        UPDATE RecruitmentPost
+        SET ${fieldsToUpdate.join(', ')}
+        WHERE id = ${id};
+      `;
 
-      // Add the id as the last parameter
-      params.push(id);
+      // Log truy vấn để debug nếu cần
+      console.log('Query:', updateQuery);
 
-      await this.prismaService.$executeRawUnsafe(updateQuery, ...params);
-      return { message: `RecruitmentPost with id ${id} updated successfully.` };
+      // Thực thi câu truy vấn
+      await this.prismaService.$executeRawUnsafe(updateQuery);
+
+      return {
+        message: `RecruitmentPost với id ${id} được cập nhật thành công.`,
+      };
     } catch (error) {
       throw new BadRequestException(
-        `Failed to update RecruitmentPost with id ${id}: ${error.message}`,
+        `Không thể cập nhật RecruitmentPost với id ${id}: ${error.message}`,
       );
     }
   }

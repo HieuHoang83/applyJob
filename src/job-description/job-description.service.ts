@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateJobDescriptionDto } from './dto/create-job-description.dto';
 import { UpdateJobDescriptionDto } from './dto/update-job-description.dto';
 import { PrismaService } from 'prisma/prisma.service';
@@ -38,42 +38,56 @@ export class JobDescriptionService {
     const fieldsToUpdate: string[] = [];
     const values: any[] = [];
 
-    if (data.location !== undefined) {
-      fieldsToUpdate.push(`location = ?`);
-      values.push(data.location);
+    // Kiểm tra và thêm các trường cần cập nhật vào truy vấn
+    if (data.location) {
+      fieldsToUpdate.push(`location = N'${data.location.replace(/'/g, "''")}'`);
     }
-    if (data.level !== undefined) {
-      fieldsToUpdate.push(`level = ?`);
-      values.push(data.level);
+    if (data.level) {
+      fieldsToUpdate.push(`level = N'${data.level.replace(/'/g, "''")}'`);
     }
-    if (data.experience !== undefined) {
-      fieldsToUpdate.push(`experience = ?`);
-      values.push(data.experience);
+    if (data.experience) {
+      fieldsToUpdate.push(
+        `experience = N'${data.experience.replace(/'/g, "''")}'`,
+      );
     }
-    if (data.salary !== undefined) {
-      fieldsToUpdate.push(`salary = ?`);
-      values.push(data.salary);
+    if (data.salary !== null) {
+      // Chỉ cập nhật nếu salary có giá trị (không phải null)
+      fieldsToUpdate.push(`salary = ${data.salary}`);
     }
     if (data.quantity !== undefined) {
-      fieldsToUpdate.push(`quantity = ?`);
-      values.push(data.quantity);
+      // Kiểm tra quantity có phải undefined không
+      fieldsToUpdate.push(`quantity = ${data.quantity}`);
     }
-    if (data.employmentType !== undefined) {
-      fieldsToUpdate.push(`employmentType = ?`);
-      values.push(data.employmentType);
+    if (data.employmentType) {
+      fieldsToUpdate.push(
+        `employmentType = N'${data.employmentType.replace(/'/g, "''")}'`,
+      );
     }
-    if (data.gender !== undefined) {
-      fieldsToUpdate.push(`gender = ?`);
-      values.push(data.gender);
+    if (data.gender) {
+      fieldsToUpdate.push(`gender = N'${data.gender.replace(/'/g, "''")}'`);
     }
 
+    // Nếu không có trường nào để cập nhật, trả về lỗi
+    if (fieldsToUpdate.length === 0) {
+      throw new BadRequestException('Không có trường nào để cập nhật.');
+    }
+
+    // Hoàn thiện truy vấn SQL
     query += fieldsToUpdate.join(', ');
-    query += ` WHERE id = ?`;
-    values.push(id);
+    query += ` WHERE id = ${id}`;
 
-    await this.prismaService.$queryRawUnsafe(query, ...values);
+    // Log truy vấn để debug nếu cần
+    console.log('Query:', query);
 
-    return this.findOne(id);
+    // Chạy truy vấn với Prisma
+    try {
+      await this.prismaService.$executeRawUnsafe(query);
+      return this.findOne(id); // Trả về dữ liệu đã cập nhật
+    } catch (error) {
+      throw new BadRequestException(
+        `Không thể cập nhật JobDescription với id ${id}: ${error.message}`,
+      );
+    }
   }
 
   async remove(id: number) {
