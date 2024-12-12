@@ -58,6 +58,7 @@ export class RecruitmentPostController {
   @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
+    // return 'ok';
     return this.recruitmentPostService.findOne(+id);
   }
   @Public()

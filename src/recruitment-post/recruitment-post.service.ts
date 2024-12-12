@@ -129,8 +129,8 @@ export class RecruitmentPostService {
   FROM "RecruitmentPost" rp
   LEFT JOIN "JobDescription" jd ON rp.id = jd."recruitmentPostId"
   WHERE rp.id = ${id}  
-  and rp.datePosted < ${CURRENT_DATE}  
-  -- and rp.deadline > ${CURRENT_DATE}    
+ 
+ 
 `;
 
     return recruitmentPost;
