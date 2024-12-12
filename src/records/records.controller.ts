@@ -11,7 +11,12 @@ import {
 import { RecordsService } from './records.service';
 import { CreateRecordDto } from './dto/create-record.dto';
 import { UpdateRecordDto } from './dto/update-record.dto';
-import { GetPaginateInfo, Public, ResponseMessage, User } from 'src/decorators/customize';
+import {
+  GetPaginateInfo,
+  Public,
+  ResponseMessage,
+  User,
+} from 'src/decorators/customize';
 import { IUser } from 'src/interface/users.interface';
 import { PaginateInfo } from 'src/interface/paginate.interface';
 import { ApiTags } from '@nestjs/swagger';
@@ -24,21 +29,22 @@ export class RecordsController {
   @Public()
   @ResponseMessage('Record created successfully')
   @Post()
-  create(
-    @Body() createRecordDto: CreateRecordDto,
-  ) {
+  create(@Body() createRecordDto: CreateRecordDto) {
     return this.recordsService.create(createRecordDto);
   }
 
   @Public()
   @ResponseMessage('List of records')
   @Get()
-  findAll(
-    @Query() paginateInfo: PaginateInfo
-  ) {
+  findAll(@Query() paginateInfo: PaginateInfo) {
     return this.recordsService.findAll(paginateInfo);
   }
-
+  @Public()
+  @Get('getRecordByOwn/:id')
+  @ResponseMessage('Record found successfully')
+  findAllRecordOwn(@Param('id') id: string) {
+    return this.recordsService.findALlOwn(+id);
+  }
   @Public()
   @Get(':id')
   @ResponseMessage('Record found successfully')
@@ -56,10 +62,7 @@ export class RecordsController {
   @Public()
   @Patch(':id')
   @ResponseMessage('Record updated successfully')
-  update(
-    @Param('id') id: string,
-    @Body() updateRecordDto: UpdateRecordDto
-  ) {
+  update(@Param('id') id: string, @Body() updateRecordDto: UpdateRecordDto) {
     return this.recordsService.update(+id, updateRecordDto);
   }
 
@@ -75,7 +78,7 @@ export class RecordsController {
   @ResponseMessage('Experience added to record successfully')
   addExperienceToRecord(
     @Param('recordId') recordId: string,
-    @Param('experienceId') experienceId: string
+    @Param('experienceId') experienceId: string,
   ) {
     return this.recordsService.addExperienceToRecord(+recordId, +experienceId);
   }
@@ -83,9 +86,7 @@ export class RecordsController {
   @Public()
   @Get(':recordId/experiences')
   @ResponseMessage('Get experience from record successfully')
-  getAllExperienceOnRecord(
-    @Param('recordId') recordId: string,
-  ) {
+  getAllExperienceOnRecord(@Param('recordId') recordId: string) {
     return this.recordsService.getAllExperienceOnRecord(+recordId);
   }
 
@@ -94,9 +95,12 @@ export class RecordsController {
   @ResponseMessage('Experience removed from record successfully')
   removeExperienceFromRecord(
     @Param('recordId') recordId: string,
-    @Param('experienceId') experienceId: string
+    @Param('experienceId') experienceId: string,
   ) {
-    return this.recordsService.removeExperienceFromRecord(+recordId, +experienceId);
+    return this.recordsService.removeExperienceFromRecord(
+      +recordId,
+      +experienceId,
+    );
   }
 
   @Public()
@@ -104,7 +108,7 @@ export class RecordsController {
   @ResponseMessage('Education added to record successfully')
   addEducationToRecord(
     @Param('recordId') recordId: string,
-    @Param('educationId') educationId: string
+    @Param('educationId') educationId: string,
   ) {
     return this.recordsService.addEducationToRecord(+recordId, +educationId);
   }
@@ -112,9 +116,7 @@ export class RecordsController {
   @Public()
   @Get(':recordId/educations')
   @ResponseMessage('Get experience from record successfully')
-  getAllEducationOnRecord(
-    @Param('recordId') recordId: string,
-  ) {
+  getAllEducationOnRecord(@Param('recordId') recordId: string) {
     return this.recordsService.getAllEducationOnRecord(+recordId);
   }
 
@@ -123,9 +125,12 @@ export class RecordsController {
   @ResponseMessage('Education removed from record successfully')
   removeEducationFromRecord(
     @Param('recordId') recordId: string,
-    @Param('educationId') educationId: string
+    @Param('educationId') educationId: string,
   ) {
-    return this.recordsService.removeEducationFromRecord(+recordId, +educationId);
+    return this.recordsService.removeEducationFromRecord(
+      +recordId,
+      +educationId,
+    );
   }
 
   @Public()
@@ -133,17 +138,18 @@ export class RecordsController {
   @ResponseMessage('Certificate added to record successfully')
   addCertificateToRecord(
     @Param('recordId') recordId: string,
-    @Param('certificateId') certificateId: string
+    @Param('certificateId') certificateId: string,
   ) {
-    return this.recordsService.addCertificateToRecord(+recordId, +certificateId);
+    return this.recordsService.addCertificateToRecord(
+      +recordId,
+      +certificateId,
+    );
   }
 
   @Public()
   @Get(':recordId/certificates')
   @ResponseMessage('Get experience from record successfully')
-  getAllCertificateOnRecord(
-    @Param('recordId') recordId: string,
-  ) {
+  getAllCertificateOnRecord(@Param('recordId') recordId: string) {
     return this.recordsService.getAllCertificateOnRecord(+recordId);
   }
 
@@ -152,8 +158,11 @@ export class RecordsController {
   @ResponseMessage('Certificate removed from record successfully')
   removeCertificateFromRecord(
     @Param('recordId') recordId: string,
-    @Param('certificateId') certificateId: string
+    @Param('certificateId') certificateId: string,
   ) {
-    return this.recordsService.removeCertificateFromRecord(+recordId, +certificateId);
+    return this.recordsService.removeCertificateFromRecord(
+      +recordId,
+      +certificateId,
+    );
   }
 }

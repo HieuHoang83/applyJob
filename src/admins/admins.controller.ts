@@ -16,6 +16,13 @@ import { CreateAdminDto } from './dto/create-admin.dto';
 @Controller('admins')
 export class AdminsController {
   constructor(private readonly adminsService: AdminsService) {}
+
+  @Public()
+  @Get('/audit-log')
+  @ResponseMessage('Get audit log')
+  findAuditLog() {
+    return this.adminsService.findAuditLog();
+  }
   @Public()
   @Post()
   @ResponseMessage('create new admin')

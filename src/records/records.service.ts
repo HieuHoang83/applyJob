@@ -116,7 +116,14 @@ export class RecordsService {
 
     return record[0];
   }
+  async findALlOwn(id: number) {
+    const record = await this.prismaService.$queryRaw`
+      SELECT id as recordId , title as recordTitle, description, ownerId, fileCvId FROM [dbo].[Record]
+      WHERE [ownerId] = ${id};
+    `;
 
+    return record;
+  }
   async findEmployee(id: number) {
     const record: [] = await this.prismaService.$queryRaw`
       SELECT * FROM [dbo].[Record]

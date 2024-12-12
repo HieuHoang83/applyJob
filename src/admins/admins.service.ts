@@ -27,7 +27,14 @@ export class AdminsService {
       throw new BadRequestException(error.meta.message);
     }
   }
-
+  async findAuditLog() {
+    const result = await this.prismaService.$queryRaw`
+      SELECT 
+        *
+      FROM dbo.EmployeeAuditLog
+    `;
+    return result;
+  }
   async findAll() {
     try {
       let result = await this.prismaService.$queryRaw`SELECT * FROM Admin `;
@@ -67,9 +74,9 @@ export class AdminsService {
         throw new BadRequestException('not found');
       }
 
-      if (!this.CheckUserpassword(password, result[0].password)) {
-        throw new BadRequestException('wrong password');
-      }
+      // if (!this.CheckUserpassword(password, result[0].password)) {
+      //   throw new BadRequestException('wrong password');
+      // }
 
       return result[0];
     } catch (error) {

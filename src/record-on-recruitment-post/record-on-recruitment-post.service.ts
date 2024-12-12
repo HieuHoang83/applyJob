@@ -107,10 +107,10 @@ export class RecordsOnPostService {
         e.id as employeeId,
         e.name AS employeeName,
         e.email AS employeeEmail
-      FROM [dbo].[RecordOnRecruitmentPost] ror
-      INNER JOIN [dbo].[RecruitmentPost] rp ON rp.id = ror.recruitmentPostId
-      INNER JOIN [dbo].[Employee] e ON e.id = rp.employerId
-      WHERE ror.[recruitmentPostId] = ${recruitmentPostId}
+      FROM [dbo].[RecordOnRecruitmentPost] ror, [dbo].[RecruitmentPost] rp, [dbo].[Employee] e ,Record 
+       
+       
+      WHERE ror.[recruitmentPostId] = ${recruitmentPostId} and rp.id = ror.recruitmentPostId and e.id = Record.ownerId and Record.id=ror.recordId
       ORDER BY ror.createdAt DESC  -- Bạn có thể thay đổi thứ tự sắp xếp theo nhu cầu
       OFFSET ${offset} ROWS
       FETCH NEXT ${pageSize} ROWS ONLY;
