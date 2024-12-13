@@ -64,29 +64,29 @@ BEGIN
         rop.createdAt DESC;
 END;
 
--- Cách sử dụng:
--- Ví dụ 1: Lấy tất cả record của một bài đăng
-EXEC [dbo].[sp_FilterRecordsByRequirements] 
-    @postId = 1
+-- -- Cách sử dụng:
+-- -- Ví dụ 1: Lấy tất cả record của một bài đăng
+-- EXEC [dbo].[sp_FilterRecordsByRequirements] 
+--     @postId = 1
 
--- Ví dụ 2: Lọc theo chứng chỉ
-EXEC [dbo].[sp_FilterRecordsByRequirements] 
-    @postId = 1,
-    @certificateName = 'AWS'
+-- -- Ví dụ 2: Lọc theo chứng chỉ
+-- EXEC [dbo].[sp_FilterRecordsByRequirements] 
+--     @postId = 1,
+--     @certificateName = 'AWS'
 
--- Ví dụ 3: Lọc theo trường học
-EXEC [dbo].[sp_FilterRecordsByRequirements] 
-    @postId = 1,
-    @schoolName = N'Bách Khoa'
+-- -- Ví dụ 3: Lọc theo trường học
+-- EXEC [dbo].[sp_FilterRecordsByRequirements] 
+--     @postId = 1,
+--     @schoolName = N'Bách Khoa'
 
--- Ví dụ 4: Lọc theo công ty đã làm
-EXEC [dbo].[sp_FilterRecordsByRequirements] 
-    @postId = 1,
-    @companyName = 'FPT'
+-- -- Ví dụ 4: Lọc theo công ty đã làm
+-- EXEC [dbo].[sp_FilterRecordsByRequirements] 
+--     @postId = 1,
+--     @companyName = 'FPT'
 
--- Ví dụ 5: Kết hợp tất cả điều kiện
-EXEC [dbo].[sp_FilterRecordsByRequirements] 
-    @postId = 1,
-    @certificateName = 'AWS',
-    @schoolName = N'Bách Khoa',
-    @companyName = 'FPT'
+-- -- Ví dụ 5: Kết hợp tất cả điều kiện
+-- EXEC [dbo].[sp_FilterRecordsByRequirements] 
+--     @postId = 1,
+--     @certificateName = 'AWS',
+--     @schoolName = N'Bách Khoa',
+--     @companyName = 'FPT'

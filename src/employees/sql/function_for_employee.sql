@@ -101,38 +101,38 @@ RETURN
 
 GO
 
-INSERT INTO [dbo].[Record] ([title], [description], [ownerId], [fileCvId])
-VALUES 
-(N'Hồ sơ DevOps Engineer', N'Hồ sơ ứng tuyển vị trí DevOps Engineer', 1, 1);
-INSERT INTO [dbo].[RecordOnRecruitmentPost] ([recordId], [recruitmentPostId], [job], [status])
-VALUES 
-(6, 2, N'React DevOps Engineer', N'Đã chấp nhận');
--- Xem thống kê của ứng viên viên có ID = 1
-SELECT * FROM dbo.CalculateApplicationSuccess(1);
+-- INSERT INTO [dbo].[Record] ([title], [description], [ownerId], [fileCvId])
+-- VALUES 
+-- (N'Hồ sơ DevOps Engineer', N'Hồ sơ ứng tuyển vị trí DevOps Engineer', 1, 1);
+-- INSERT INTO [dbo].[RecordOnRecruitmentPost] ([recordId], [recruitmentPostId], [job], [status])
+-- VALUES 
+-- (6, 2, N'React DevOps Engineer', N'Đã chấp nhận');
+-- -- Xem thống kê của ứng viên viên có ID = 1
+-- SELECT * FROM dbo.CalculateApplicationSuccess(1);
 
--- Xem thống kê của nhiều ứng viên viên
-SELECT * FROM dbo.CalculateApplicationSuccess(1)
-UNION ALL
-SELECT * FROM dbo.CalculateApplicationSuccess(2)
-UNION ALL
-SELECT * FROM dbo.CalculateApplicationSuccess(3)
-UNION ALL
-SELECT * FROM dbo.CalculateApplicationSuccess(4)
-UNION ALL
-SELECT * FROM dbo.CalculateApplicationSuccess(5);
+-- -- Xem thống kê của nhiều ứng viên viên
+-- SELECT * FROM dbo.CalculateApplicationSuccess(1)
+-- UNION ALL
+-- SELECT * FROM dbo.CalculateApplicationSuccess(2)
+-- UNION ALL
+-- SELECT * FROM dbo.CalculateApplicationSuccess(3)
+-- UNION ALL
+-- SELECT * FROM dbo.CalculateApplicationSuccess(4)
+-- UNION ALL
+-- SELECT * FROM dbo.CalculateApplicationSuccess(5);
 
--- Lọc ứng viên viên có tỷ lệ thành công trên 50%
-SELECT * 
-FROM (
-    SELECT * FROM dbo.CalculateApplicationSuccess(1)
-    UNION ALL
-    SELECT * FROM dbo.CalculateApplicationSuccess(2)
-    UNION ALL
-    SELECT * FROM dbo.CalculateApplicationSuccess(3)
-    UNION ALL
-    SELECT * FROM dbo.CalculateApplicationSuccess(4)
-    UNION ALL
-    SELECT * FROM dbo.CalculateApplicationSuccess(5)
-) AS combined
-WHERE SuccessRate >= 50;
+-- -- Lọc ứng viên viên có tỷ lệ thành công trên 50%
+-- SELECT * 
+-- FROM (
+--     SELECT * FROM dbo.CalculateApplicationSuccess(1)
+--     UNION ALL
+--     SELECT * FROM dbo.CalculateApplicationSuccess(2)
+--     UNION ALL
+--     SELECT * FROM dbo.CalculateApplicationSuccess(3)
+--     UNION ALL
+--     SELECT * FROM dbo.CalculateApplicationSuccess(4)
+--     UNION ALL
+--     SELECT * FROM dbo.CalculateApplicationSuccess(5)
+-- ) AS combined
+-- WHERE SuccessRate >= 50;
 

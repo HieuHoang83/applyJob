@@ -80,22 +80,22 @@ RETURN
 
 GO
 
--- Ví dụ cách sử dụng:
--- Hiển thị theo Competition Level
-SELECT * FROM dbo.AnalyzeRecruitmentTrends(
-    N'Công nghệ thông tin', 
-    3.5,
-    '2022-01-01',
-    '2024-12-31',
-    'Competition'
-);
+-- -- Ví dụ cách sử dụng:
+-- -- Hiển thị theo Competition Level
+-- SELECT * FROM dbo.AnalyzeRecruitmentTrends(
+--     N'Công nghệ thông tin', 
+--     3.5,
+--     '2022-01-01',
+--     '2024-12-31',
+--     'Competition'
+-- );
 
--- Hiển thị theo Attractiveness Level
-SELECT * FROM dbo.AnalyzeRecruitmentTrends(
-    N'Công nghệ thông tin', 
-    3.5,
-    '2022-01-01',
-    '2024-12-31',
-    'Attractiveness'
-);
-GO
+-- -- Hiển thị theo Attractiveness Level
+-- SELECT * FROM dbo.AnalyzeRecruitmentTrends(
+--     N'Công nghệ thông tin', 
+--     3.5,
+--     '2022-01-01',
+--     '2024-12-31',
+--     'Attractiveness'
+-- );
+-- GO

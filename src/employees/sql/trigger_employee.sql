@@ -194,133 +194,133 @@ END;
 
 
 
--- TEST TRIGGER
--- 1. Tạo nhân viên mẫu
--- Tạo nhân viên mẫu
-INSERT INTO [dbo].[Employee] (email, name, password, phone, address, birthday, gender, avatar, isBanned)
-VALUES ('test.employee@company.com', 'Test Employee', 'password123', '0123456789', 
-        'Test Address', '1995-01-01', 'Male', 'avatar.jpg', 0);
+-- -- TEST TRIGGER
+-- -- 1. Tạo nhân viên mẫu
+-- -- Tạo nhân viên mẫu
+-- INSERT INTO [dbo].[Employee] (email, name, password, phone, address, birthday, gender, avatar, isBanned)
+-- VALUES ('test.employee@company.com', 'Test Employee', 'password123', '0123456789', 
+--         'Test Address', '1995-01-01', 'Male', 'avatar.jpg', 0);
 
--- 2.1 Kiểm tra thay đổi thông tin cơ bản
--- Cập nhật thông tin cơ bản
-UPDATE [dbo].[Employee]
-SET name = 'Updated Name',
-    phone = '9876543210',
-    address = 'New Address'
-WHERE email = 'test.employee@company.com';
+-- -- 2.1 Kiểm tra thay đổi thông tin cơ bản
+-- -- Cập nhật thông tin cơ bản
+-- UPDATE [dbo].[Employee]
+-- SET name = 'Updated Name',
+--     phone = '9876543210',
+--     address = 'New Address'
+-- WHERE email = 'test.employee@company.com';
 
--- Kiểm tra log
-SELECT * FROM [dbo].[EmployeeAuditLog]
-WHERE employeeId = (SELECT id FROM [dbo].[Employee] WHERE email = 'test.employee@company.com')
-ORDER BY modifiedAt DESC;
+-- -- Kiểm tra log
+-- SELECT * FROM [dbo].[EmployeeAuditLog]
+-- WHERE employeeId = (SELECT id FROM [dbo].[Employee] WHERE email = 'test.employee@company.com')
+-- ORDER BY modifiedAt DESC;
 
--- 2.2. Kiểm tra cảnh báo thay đổi email nhiều lần
--- Thực hiện 4 lần thay đổi email trong vòng 24h
-UPDATE [dbo].[Employee]
-SET email = 'test1@company.com'
-WHERE email = 'test.employee@company.com';
+-- -- 2.2. Kiểm tra cảnh báo thay đổi email nhiều lần
+-- -- Thực hiện 4 lần thay đổi email trong vòng 24h
+-- UPDATE [dbo].[Employee]
+-- SET email = 'test1@company.com'
+-- WHERE email = 'test.employee@company.com';
 
-UPDATE [dbo].[Employee]
-SET email = 'test2@company.com'
-WHERE email = 'test1@company.com';
+-- UPDATE [dbo].[Employee]
+-- SET email = 'test2@company.com'
+-- WHERE email = 'test1@company.com';
 
-UPDATE [dbo].[Employee]
-SET email = 'test3@company.com'
-WHERE email = 'test2@company.com';
+-- UPDATE [dbo].[Employee]
+-- SET email = 'test3@company.com'
+-- WHERE email = 'test2@company.com';
 
-UPDATE [dbo].[Employee]
-SET email = 'test4@company.com'
-WHERE email = 'test3@company.com';
+-- UPDATE [dbo].[Employee]
+-- SET email = 'test4@company.com'
+-- WHERE email = 'test3@company.com';
 
-UPDATE [dbo].[Employee]
-SET email = 'test3@company.com'
-WHERE email = 'test4@company.com';
+-- UPDATE [dbo].[Employee]
+-- SET email = 'test3@company.com'
+-- WHERE email = 'test4@company.com';
 
 
--- Kiểm tra log và cảnh báo
-SELECT * FROM [dbo].[EmployeeAuditLog]
-WHERE field = 'email'
-ORDER BY modifiedAt DESC;
+-- -- Kiểm tra log và cảnh báo
+-- SELECT * FROM [dbo].[EmployeeAuditLog]
+-- WHERE field = 'email'
+-- ORDER BY modifiedAt DESC;
 
--- 2.3. Kiểm tra cảnh báo thay đổi mật khẩu nhiều lần
--- Thực hiện 3 lần thay đổi mật khẩu trong vòng 1h
-UPDATE [dbo].[Employee]
-SET password = 'password1'
-WHERE email = 'test4@company.com';
+-- -- 2.3. Kiểm tra cảnh báo thay đổi mật khẩu nhiều lần
+-- -- Thực hiện 3 lần thay đổi mật khẩu trong vòng 1h
+-- UPDATE [dbo].[Employee]
+-- SET password = 'password1'
+-- WHERE email = 'test4@company.com';
 
-UPDATE [dbo].[Employee]
-SET password = 'password2'
-WHERE email = 'test4@company.com';
+-- UPDATE [dbo].[Employee]
+-- SET password = 'password2'
+-- WHERE email = 'test4@company.com';
 
-UPDATE [dbo].[Employee]
-SET password = 'password3'
-WHERE email = 'test4@company.com';
+-- UPDATE [dbo].[Employee]
+-- SET password = 'password3'
+-- WHERE email = 'test4@company.com';
 
--- Kiểm tra log và cảnh báo
-SELECT * FROM [dbo].[EmployeeAuditLog]
-WHERE field = 'password'
-ORDER BY modifiedAt DESC;
+-- -- Kiểm tra log và cảnh báo
+-- SELECT * FROM [dbo].[EmployeeAuditLog]
+-- WHERE field = 'password'
+-- ORDER BY modifiedAt DESC;
 
--- 3. Kiểm tra INSERT hàng loạt
--- Tạo nhiều tài khoản cùng domain trong 1h
-INSERT INTO [dbo].[Employee] (email, name, password, phone)
-VALUES ('test1@testdomain.com', 'Test 1', 'pass1', '1111111111');
-INSERT INTO [dbo].[Employee] (email, name, password, phone)
-VALUES ('test2@testdomain.com', 'Test 2', 'pass2', '2222222222');
-INSERT INTO [dbo].[Employee] (email, name, password, phone)
-VALUES ('test3@testdomain.com', 'Test 3', 'pass3', '3333333333');
-INSERT INTO [dbo].[Employee] (email, name, password, phone)
-VALUES ('test4@testdomain.com', 'Test 4', 'pass4', '4444444444');
-INSERT INTO [dbo].[Employee] (email, name, password, phone)
-VALUES ('test5@testdomain.com', 'Test 5', 'pass5', '5555555555');
-INSERT INTO [dbo].[Employee] (email, name, password, phone)
-VALUES ('test6@testdomain.com', 'Test 6', 'pass6', '6666666666');
-INSERT INTO [dbo].[Employee] (email, name, password, phone)
-VALUES ('test7@testdomain.com', 'Test 7', 'pass7', '7777777777');
-INSERT INTO [dbo].[Employee] (email, name, password, phone)
-VALUES ('test8@testdomain.com', 'Test 8', 'pass8', '8888888888');
-INSERT INTO [dbo].[Employee] (email, name, password, phone)
-VALUES ('test9@testdomain.com', 'Test 9', 'pass9', '9999999999');
-INSERT INTO [dbo].[Employee] (email, name, password, phone)
-VALUES ('test10@testdomain.com', 'Test 10', 'pass10', '1010101010');
-INSERT INTO [dbo].[Employee] (email, name, password, phone)
-VALUES ('test11@testdomain.com', 'Test 11', 'pass11', '1111111111');
--- Kiểm tra log và cảnh báo
-SELECT * FROM [dbo].[EmployeeAuditLog]
-WHERE action = 'INSERT'
-AND suspiciousActivity = 1
-ORDER BY modifiedAt DESC;
+-- -- 3. Kiểm tra INSERT hàng loạt
+-- -- Tạo nhiều tài khoản cùng domain trong 1h
+-- INSERT INTO [dbo].[Employee] (email, name, password, phone)
+-- VALUES ('test1@testdomain.com', 'Test 1', 'pass1', '1111111111');
+-- INSERT INTO [dbo].[Employee] (email, name, password, phone)
+-- VALUES ('test2@testdomain.com', 'Test 2', 'pass2', '2222222222');
+-- INSERT INTO [dbo].[Employee] (email, name, password, phone)
+-- VALUES ('test3@testdomain.com', 'Test 3', 'pass3', '3333333333');
+-- INSERT INTO [dbo].[Employee] (email, name, password, phone)
+-- VALUES ('test4@testdomain.com', 'Test 4', 'pass4', '4444444444');
+-- INSERT INTO [dbo].[Employee] (email, name, password, phone)
+-- VALUES ('test5@testdomain.com', 'Test 5', 'pass5', '5555555555');
+-- INSERT INTO [dbo].[Employee] (email, name, password, phone)
+-- VALUES ('test6@testdomain.com', 'Test 6', 'pass6', '6666666666');
+-- INSERT INTO [dbo].[Employee] (email, name, password, phone)
+-- VALUES ('test7@testdomain.com', 'Test 7', 'pass7', '7777777777');
+-- INSERT INTO [dbo].[Employee] (email, name, password, phone)
+-- VALUES ('test8@testdomain.com', 'Test 8', 'pass8', '8888888888');
+-- INSERT INTO [dbo].[Employee] (email, name, password, phone)
+-- VALUES ('test9@testdomain.com', 'Test 9', 'pass9', '9999999999');
+-- INSERT INTO [dbo].[Employee] (email, name, password, phone)
+-- VALUES ('test10@testdomain.com', 'Test 10', 'pass10', '1010101010');
+-- INSERT INTO [dbo].[Employee] (email, name, password, phone)
+-- VALUES ('test11@testdomain.com', 'Test 11', 'pass11', '1111111111');
+-- -- Kiểm tra log và cảnh báo
+-- SELECT * FROM [dbo].[EmployeeAuditLog]
+-- WHERE action = 'INSERT'
+-- AND suspiciousActivity = 1
+-- ORDER BY modifiedAt DESC;
 
--- 4. Kiểm tra DELETE hàng loạt
--- Xóa nhiều nhân viên trong 5 phút
-DECLARE @i INT = 1;
-WHILE @i <= 11
-BEGIN
-    DELETE FROM [dbo].[Employee]
-    WHERE email = 'test' + CAST(@i AS VARCHAR) + '@testdomain.com';
-    SET @i = @i + 1;
-END
+-- -- 4. Kiểm tra DELETE hàng loạt
+-- -- Xóa nhiều nhân viên trong 5 phút
+-- DECLARE @i INT = 1;
+-- WHILE @i <= 11
+-- BEGIN
+--     DELETE FROM [dbo].[Employee]
+--     WHERE email = 'test' + CAST(@i AS VARCHAR) + '@testdomain.com';
+--     SET @i = @i + 1;
+-- END
 
--- Kiểm tra log và cảnh báo
-SELECT * FROM [dbo].[EmployeeAuditLog]
-WHERE action = 'DELETE'
-AND suspiciousActivity = 1
-ORDER BY modifiedAt DESC;
+-- -- Kiểm tra log và cảnh báo
+-- SELECT * FROM [dbo].[EmployeeAuditLog]
+-- WHERE action = 'DELETE'
+-- AND suspiciousActivity = 1
+-- ORDER BY modifiedAt DESC;
 
--- 5. Kiểm tra tổng hợp các hoạt động đáng ngờ
--- Xem tất cả các hoạt động đáng ngờ
-SELECT 
-    action,
-    employeeId,
-    field,
-    oldValue,
-    newValue,
-    suspiciousReason,
-    modifiedBy,
-    modifiedAt,
-    ipAddress
-FROM [dbo].[EmployeeAuditLog]
-WHERE suspiciousActivity = 1
-ORDER BY modifiedAt DESC;
+-- -- 5. Kiểm tra tổng hợp các hoạt động đáng ngờ
+-- -- Xem tất cả các hoạt động đáng ngờ
+-- SELECT 
+--     action,
+--     employeeId,
+--     field,
+--     oldValue,
+--     newValue,
+--     suspiciousReason,
+--     modifiedBy,
+--     modifiedAt,
+--     ipAddress
+-- FROM [dbo].[EmployeeAuditLog]
+-- WHERE suspiciousActivity = 1
+-- ORDER BY modifiedAt DESC;
 
 --

@@ -146,27 +146,27 @@ BEGIN
 END
 GO
 
--- Ví dụ thực thi CREATE Employee
-EXEC dbo.sp_CreateEmployee
-    @phone = '0912345678',
-    @address = N'123 Đường ABC, Quận 1, TP.HCM',
-    @email = 'nhanvien@example.com',
-    @name = N'Nguyễn Văn A',
-    @gender = N'Nam',
-    @birthday = '1995-01-01',
-    @avatar = 'https://example.com/avatar.jpg',
-    @password = 'hashedPassword123';
+-- -- Ví dụ thực thi CREATE Employee
+-- EXEC dbo.sp_CreateEmployee
+--     @phone = '0912345678',
+--     @address = N'123 Đường ABC, Quận 1, TP.HCM',
+--     @email = 'nhanvien@example.com',
+--     @name = N'Nguyễn Văn A',
+--     @gender = N'Nam',
+--     @birthday = '1995-01-01',
+--     @avatar = 'https://example.com/avatar.jpg',
+--     @password = 'hashedPassword123';
 
--- Ví dụ thực thi UPDATE Employee
-EXEC dbo.sp_UpdateEmployee
-    @id = 6,
-    @phone = '0987654321',
-    @address = N'456 Đường XYZ, Quận 2, TP.HCM',
-    @email = 'nhanvien.moi@example.com',
-    @name = N'Nguyễn Văn A Updated',
-    @gender = N'Nam',
-    @birthday = '1995-01-01',
-    @avatar = 'https://example.com/new-avatar.jpg';
+-- -- Ví dụ thực thi UPDATE Employee
+-- EXEC dbo.sp_UpdateEmployee
+--     @id = 6,
+--     @phone = '0987654321',
+--     @address = N'456 Đường XYZ, Quận 2, TP.HCM',
+--     @email = 'nhanvien.moi@example.com',
+--     @name = N'Nguyễn Văn A Updated',
+--     @gender = N'Nam',
+--     @birthday = '1995-01-01',
+--     @avatar = 'https://example.com/new-avatar.jpg';
 
--- Ví dụ thực thi DELETE Employee
-EXEC dbo.sp_DeleteEmployee @id = 6;
+-- -- Ví dụ thực thi DELETE Employee
+-- EXEC dbo.sp_DeleteEmployee @id = 6;

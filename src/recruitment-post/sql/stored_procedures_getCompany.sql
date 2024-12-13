@@ -29,26 +29,26 @@ BEGIN
         COUNT(DISTINCT rop.recordId) DESC;
 END;
 
--- Cách sử dụng:
+-- -- Cách sử dụng:
+-- -- EXEC [dbo].[sp_GetRecruitmentStatsByCompany]
+-- --     @minRating = 4.0,
+-- --     @minApplications = 10,
+-- --     @industry = 'Technology';
+
+-- -- Ví dụ 1: Lấy thống kê của tất cả công ty
 -- EXEC [dbo].[sp_GetRecruitmentStatsByCompany]
---     @minRating = 4.0,
---     @minApplications = 10,
---     @industry = 'Technology';
 
--- Ví dụ 1: Lấy thống kê của tất cả công ty
-EXEC [dbo].[sp_GetRecruitmentStatsByCompany]
+-- -- Ví dụ 2: Lọc công ty có đánh giá từ 4.5 trở lên
+-- EXEC [dbo].[sp_GetRecruitmentStatsByCompany] 
+--     @minRating = 4.5
 
--- Ví dụ 2: Lọc công ty có đánh giá từ 4.5 trở lên
-EXEC [dbo].[sp_GetRecruitmentStatsByCompany] 
-    @minRating = 4.5
+-- -- Ví dụ 3: Lọc công ty có ít nhất 1 đơn ứng tuyển trong ngành Công nghệ thông tin
+-- EXEC [dbo].[sp_GetRecruitmentStatsByCompany] 
+--     @minApplications = 1,
+--     @industry = N'Công nghệ thông tin'
 
--- Ví dụ 3: Lọc công ty có ít nhất 1 đơn ứng tuyển trong ngành Công nghệ thông tin
-EXEC [dbo].[sp_GetRecruitmentStatsByCompany] 
-    @minApplications = 1,
-    @industry = N'Công nghệ thông tin'
-
--- Ví dụ 4: Kết hợp tất cả điều kiện
-EXEC [dbo].[sp_GetRecruitmentStatsByCompany] 
-    @minRating = 4.5,
-    @minApplications = 1,
-    @industry = N'Công nghệ thông tin'
+-- -- Ví dụ 4: Kết hợp tất cả điều kiện
+-- EXEC [dbo].[sp_GetRecruitmentStatsByCompany] 
+--     @minRating = 4.5,
+--     @minApplications = 1,
+--     @industry = N'Công nghệ thông tin'
